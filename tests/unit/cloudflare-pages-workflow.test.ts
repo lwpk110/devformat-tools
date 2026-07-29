@@ -64,6 +64,28 @@ describe('Cloudflare Pages workflow 契约', () => {
     ]);
   });
 
+  it('质量门禁后初始化 Pages project，再执行 Wrangler 部署', () => {
+    const initializeIndex = steps.findIndex(
+      (step) => step.name === 'Ensure Cloudflare Pages project',
+    );
+    const testIndex = steps.findIndex((step) => step.run === 'npm test');
+    const deployIndex = steps.findIndex((step) => step.id === 'deploy');
+    const initialize = steps[initializeIndex];
+
+    expect(initialize).toEqual({
+      name: 'Ensure Cloudflare Pages project',
+      env: {
+        CLOUDFLARE_ACCOUNT_ID: '${{ secrets.CLOUDFLARE_ACCOUNT_ID }}',
+        CLOUDFLARE_API_TOKEN: '${{ secrets.CLOUDFLARE_API_TOKEN }}',
+        CLOUDFLARE_PAGES_PROJECT: 'devformat-tools',
+        CLOUDFLARE_PAGES_PRODUCTION_BRANCH: 'main',
+      },
+      run: 'node .github/scripts/ensure-pages-project.mjs',
+    });
+    expect(initializeIndex).toBeGreaterThan(testIndex);
+    expect(deployIndex).toBeGreaterThan(initializeIndex);
+  });
+
   it('使用固定 Pages 项目和约定 secrets 上传 dist', () => {
     const deploy = steps.find((step) => step.id === 'deploy');
     expect(deploy).toMatchObject({

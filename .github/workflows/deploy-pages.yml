@@ -33,6 +33,13 @@ jobs:
         run: npm run build
       - name: Test
         run: npm test
+      - name: Ensure Cloudflare Pages project
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_PAGES_PROJECT: devformat-tools
+          CLOUDFLARE_PAGES_PRODUCTION_BRANCH: main
+        run: node .github/scripts/ensure-pages-project.mjs
       - name: Deploy
         id: deploy
         uses: cloudflare/wrangler-action@v3
