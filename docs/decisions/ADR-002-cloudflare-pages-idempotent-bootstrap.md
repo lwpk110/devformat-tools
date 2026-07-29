@@ -22,7 +22,7 @@ Token 只存在于 GitHub secrets，不能读取回 Agent，也不应通过聊�
 2. HTTP 200 时验证响应成功、项目名一致且 Production branch 为 `main`。
 3. HTTP 404 时创建 Direct Upload Pages project，名称固定为 `devformat-tools`，Production branch 固定为 `main`。
 4. 并发创建冲突时重新查询并执行相同验证；其他状态立即失败。
-5. API 响应只写入 runner 临时文件，并在 step 退出时删除；不把响应 body、Token 或 Account ID 输出到日志或 Job Summary。
+5. API 响应仅在进程内存中解析，不落盘；不把 response body、Token 或 Account ID 输出到日志或 Job Summary。
 6. 只有项目存在且验证通过后才执行 `wrangler pages deploy dist`。
 
 该步骤持续保留在 workflow 中，用查询与验证保证后续运行幂等。它只管理固定 Pages project 的存在性，不更新、删除或迁移任何既有 Cloudflare 资源。

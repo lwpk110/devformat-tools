@@ -68,7 +68,7 @@ checkout
 → 写入无敏感信息的部署 URL 到 Job Summary
 ```
 
-项目初始化步骤仅在完整质量门禁通过后运行。它通过 Cloudflare REST API 查询固定 Pages project：HTTP 200 时验证名称和 Production branch；HTTP 404 时创建 `devformat-tools`，Production branch 固定为 `main`；并发创建返回冲突时重新查询并验证最终资源；其他 HTTP 状态或响应契约不匹配时立即失败。响应暂存于 runner 的临时目录并在 step 退出时删除，不输出 API body、Token 或 Account ID。
+项目初始化步骤仅在完整质量门禁通过后运行。它通过 Cloudflare REST API 查询固定 Pages project：HTTP 200 时验证名称和 Production branch；HTTP 404 时创建 `devformat-tools`，Production branch 固定为 `main`；并发创建返回冲突时重新查询并验证最终资源；其他 HTTP 状态或响应契约不匹配时立即失败。API 响应仅在进程内存中解析，不落盘，也不输出 response body、Token 或 Account ID。
 
 随后部署步骤向 Wrangler Action 传入两个 Cloudflare secrets、GitHub 自动 token、`dist` 和固定 Pages project name。Wrangler 从 Git metadata 识别当前 branch；workflow 不拼接未经处理的 branch 名到 shell 命令。
 
