@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+.claude/
+.claude-flow/
+.lighthouseci/
+docs/verification/lighthouse/
+npm-debug.log*

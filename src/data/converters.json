@@ -1,0 +1,125 @@
+[
+  {
+    "slug": "json-csv",
+    "category": "Data",
+    "title": "JSON to CSV & CSV to JSON Converter - Free & Private",
+    "description": "Convert JSON to CSV or CSV to JSON instantly in your browser. Handles headers, quotes, commas and multiline values without uploads.",
+    "featuredRank": 1,
+    "directions": [
+      {
+        "id": "json-to-csv",
+        "from": "JSON",
+        "to": "CSV",
+        "sampleInput": "[\n  { \"name\": \"Ada\", \"language\": \"Analytical Engine\" },\n  { \"name\": \"Grace\", \"language\": \"COBOL\" }\n]",
+        "sampleOutput": "name,language\nAda,Analytical Engine\nGrace,COBOL",
+        "downloadExtension": "csv",
+        "summary": "Turn a JSON object or object array into CSV with a header row."
+      },
+      {
+        "id": "csv-to-json",
+        "from": "CSV",
+        "to": "JSON",
+        "sampleInput": "name,language\nAda,Analytical Engine\nGrace,COBOL",
+        "sampleOutput": "[\n  {\n    \"name\": \"Ada\",\n    \"language\": \"Analytical Engine\"\n  },\n  {\n    \"name\": \"Grace\",\n    \"language\": \"COBOL\"\n  }\n]",
+        "downloadExtension": "json",
+        "summary": "Parse a header-based CSV document into a JSON object array."
+      }
+    ],
+    "faq": [
+      { "q": "Can I convert CSV to JSON on the same page?", "a": "Yes. Use Swap to switch between JSON to CSV and CSV to JSON without opening another page." },
+      { "q": "Does the converter support commas and newlines?", "a": "Yes. Properly quoted CSV fields can contain commas, double quotes and line breaks." }
+    ]
+  },
+  {
+    "slug": "base64",
+    "category": "Encoding",
+    "title": "Base64 Encode & Decode Online - UTF-8 and Private",
+    "description": "Encode text to Base64 or decode Base64 to UTF-8 locally in your browser. Free, instant and no uploads.",
+    "featuredRank": 2,
+    "directions": [
+      { "id": "base64-encode", "from": "Text", "to": "Base64", "sampleInput": "Hello, DevFormat!", "sampleOutput": "SGVsbG8sIERldkZvcm1hdCE=", "downloadExtension": "txt", "summary": "Encode UTF-8 text as standard Base64." },
+      { "id": "base64-decode", "from": "Base64", "to": "Text", "sampleInput": "SGVsbG8sIERldkZvcm1hdCE=", "sampleOutput": "Hello, DevFormat!", "downloadExtension": "txt", "summary": "Decode standard Base64 into readable UTF-8 text." }
+    ],
+    "faq": [
+      { "q": "Is Base64 encoding encryption?", "a": "No. Base64 is a reversible text encoding and should not be used to protect secrets." },
+      { "q": "Can this tool decode UTF-8 text?", "a": "Yes. The decoder validates the Base64 input and returns UTF-8 text." }
+    ]
+  },
+  {
+    "slug": "json-yaml",
+    "category": "Data",
+    "title": "JSON to YAML & YAML to JSON Converter - Online & Private",
+    "description": "Convert JSON to YAML or YAML to JSON on one private browser page. Supports nested objects and arrays without uploads.",
+    "featuredRank": 3,
+    "directions": [
+      { "id": "json-to-yaml", "from": "JSON", "to": "YAML", "sampleInput": "{\n  \"service\": \"api\",\n  \"replicas\": 3,\n  \"enabled\": true\n}", "sampleOutput": "service: api\nreplicas: 3\nenabled: true", "downloadExtension": "yaml", "summary": "Convert JSON configuration into readable YAML." },
+      { "id": "yaml-to-json", "from": "YAML", "to": "JSON", "sampleInput": "service: api\nreplicas: 3\nenabled: true", "sampleOutput": "{\n  \"service\": \"api\",\n  \"replicas\": 3,\n  \"enabled\": true\n}", "downloadExtension": "json", "summary": "Parse YAML configuration into formatted JSON." }
+    ],
+    "faq": [
+      { "q": "Can I convert YAML back to JSON here?", "a": "Yes. Swap changes the direction on this same page and keeps both tasks under one canonical URL." },
+      { "q": "Does this JSON YAML converter upload my configuration?", "a": "No. Parsing and serialization run entirely inside your browser." }
+    ]
+  },
+  {
+    "slug": "json-xml",
+    "category": "Data",
+    "title": "JSON to XML & XML to JSON Converter - Safe and Private",
+    "description": "Convert JSON to XML or XML to JSON locally. Supports attributes, text and repeated elements while rejecting unsafe entity declarations.",
+    "featuredRank": 4,
+    "directions": [
+      { "id": "json-to-xml", "from": "JSON", "to": "XML", "sampleInput": "{\n  \"root\": {\n    \"@id\": \"7\",\n    \"item\": [\"Ada\", \"Grace\"]\n  }\n}", "sampleOutput": "<root id=\"7\"><item>Ada</item><item>Grace</item></root>", "downloadExtension": "xml", "summary": "Create XML from JSON using @ attributes and #text values." },
+      { "id": "xml-to-json", "from": "XML", "to": "JSON", "sampleInput": "<root id=\"7\"><item>Ada</item><item>Grace</item></root>", "sampleOutput": "{\n  \"root\": {\n    \"@id\": \"7\",\n    \"item\": [\n      \"Ada\",\n      \"Grace\"\n    ]\n  }\n}", "downloadExtension": "json", "summary": "Parse safe XML into JSON with predictable attribute and array mapping." }
+    ],
+    "faq": [
+      { "q": "How are XML attributes represented in JSON?", "a": "Attribute names use an @ prefix, text uses #text and repeated elements become arrays." },
+      { "q": "Does the XML parser load external entities?", "a": "No. DOCTYPE and ENTITY declarations are rejected before parsing." }
+    ]
+  },
+  {
+    "slug": "unix-timestamp",
+    "category": "Time",
+    "title": "Unix Timestamp to Date & Date to Timestamp Converter",
+    "description": "Convert Unix timestamps in seconds or milliseconds to UTC ISO dates, or convert ISO DateTime back to Unix seconds.",
+    "featuredRank": 5,
+    "directions": [
+      { "id": "timestamp-to-datetime", "from": "Unix Timestamp", "to": "DateTime", "sampleInput": "1704067200", "sampleOutput": "2024-01-01T00:00:00.000Z", "downloadExtension": "txt", "summary": "Detect Unix seconds or milliseconds and display an ISO 8601 UTC date." },
+      { "id": "datetime-to-timestamp", "from": "DateTime", "to": "Unix Timestamp", "sampleInput": "2024-01-01T00:00:00Z", "sampleOutput": "1704067200", "downloadExtension": "txt", "summary": "Convert an ISO 8601 date and time into Unix seconds." }
+    ],
+    "faq": [
+      { "q": "Does the timestamp converter accept milliseconds?", "a": "Yes. Large numeric values are automatically interpreted as milliseconds; shorter values are treated as seconds." },
+      { "q": "Which timezone is shown?", "a": "Timestamp results use UTC and the ISO 8601 format ending in Z." }
+    ]
+  },
+  {
+    "slug": "json-to-go-struct",
+    "category": "Type Generators",
+    "title": "JSON to Go Struct Converter - Free & Private",
+    "description": "Convert JSON objects into typed Go structs instantly in your browser. Free, private, and no signup required.",
+    "directions": [{ "id": "json-to-go-struct", "from": "JSON", "to": "Go Struct", "sampleInput": "{\n  \"id\": 42,\n  \"name\": \"Ada\",\n  \"active\": true\n}", "sampleOutput": "type Root struct {\n\tID int `json:\"id\"`\n\tName string `json:\"name\"`\n\tActive bool `json:\"active\"`\n}", "downloadExtension": "go", "summary": "Generate typed Go structs with JSON field tags." }],
+    "faq": [{ "q": "Does this JSON to Go converter upload my data?", "a": "No. Conversion runs entirely in your browser, so your JSON never leaves your device." }, { "q": "How are nested objects handled?", "a": "Nested JSON objects become named Go structs and arrays receive inferred element types." }]
+  },
+  {
+    "slug": "json-to-typescript",
+    "category": "Type Generators",
+    "title": "JSON to TypeScript Interface Converter",
+    "description": "Generate clean TypeScript interfaces from JSON locally in your browser, with nested object and array support.",
+    "directions": [{ "id": "json-to-typescript", "from": "JSON", "to": "TypeScript Interface", "sampleInput": "{\n  \"id\": 42,\n  \"name\": \"Ada\",\n  \"active\": true\n}", "sampleOutput": "export interface Root {\n  id: number;\n  name: string;\n  active: boolean;\n}", "downloadExtension": "ts", "summary": "Generate clean TypeScript interfaces from JSON." }],
+    "faq": [{ "q": "Can this converter infer nested TypeScript interfaces?", "a": "Yes. Nested objects generate separate interfaces and arrays infer their element types." }, { "q": "Is the generated TypeScript editable?", "a": "Yes. Copy or download the output and adapt the generated interfaces in your project." }]
+  },
+  {
+    "slug": "json-to-python-dataclass",
+    "category": "Type Generators",
+    "title": "JSON to Python Dataclass Generator",
+    "description": "Turn JSON objects into typed Python dataclasses in your browser, including nested models and lists.",
+    "directions": [{ "id": "json-to-python-dataclass", "from": "JSON", "to": "Python Dataclass", "sampleInput": "{\n  \"id\": 42,\n  \"name\": \"Ada\",\n  \"active\": true\n}", "sampleOutput": "from dataclasses import dataclass\n\n@dataclass\nclass Root:\n    id: int\n    name: str\n    active: bool", "downloadExtension": "py", "summary": "Generate typed Python dataclasses from JSON." }],
+    "faq": [{ "q": "Which Python version does the output target?", "a": "The generated code uses standard dataclasses and built-in generic types available in modern Python 3." }, { "q": "How are invalid Python field names handled?", "a": "Field names are sanitized and a metadata mapping preserves the original JSON key." }]
+  },
+  {
+    "slug": "json-to-rust-struct",
+    "category": "Type Generators",
+    "title": "JSON to Rust Struct Generator",
+    "description": "Generate serde-ready Rust structs from JSON locally, with nested objects, vectors, and renamed fields.",
+    "directions": [{ "id": "json-to-rust-struct", "from": "JSON", "to": "Rust Struct", "sampleInput": "{\n  \"id\": 42,\n  \"name\": \"Ada\",\n  \"active\": true\n}", "sampleOutput": "use serde::{Deserialize, Serialize};\n\n#[derive(Debug, Serialize, Deserialize)]\npub struct Root {\n    pub id: i64,\n    pub name: String,\n    pub active: bool,\n}", "downloadExtension": "rs", "summary": "Generate serde-ready Rust structs from JSON." }],
+    "faq": [{ "q": "Does the output work with serde?", "a": "Yes. Generated structs derive Serialize and Deserialize and add rename attributes when required." }, { "q": "What type is used for JSON numbers?", "a": "Integers use i64 and decimal values use f64." }]
+  }
+]
