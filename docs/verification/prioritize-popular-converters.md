@@ -27,7 +27,7 @@
 ### bidirectional-local-conversion
 
 - `src/data/converters.json` 的五个高频工具各有两个 directions，四个生成器各有一个。
-- `ConverterTool.test.tsx` 覆盖 Swap、输出回填、pathname 不变和单向页隐藏 Swap。
+- `ConverterTool.test.tsx` 覆盖固定双输入、双方向转换、pathname 不变和单向页只读输出。
 - 算法测试覆盖 CSV quotes/commas/newlines、UTF-8 Base64、YAML nested data、XML attributes/arrays/DTD/ENTITY、Timestamp seconds/milliseconds。
 - 所有 15 个 direction 都通过确定性样例契约；性能测试逐个断言中位耗时 <100ms。
 

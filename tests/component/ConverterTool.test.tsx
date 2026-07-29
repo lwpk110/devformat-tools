@@ -47,7 +47,9 @@ describe('ConverterTool', () => {
     expect(screen.getByLabelText('TypeScript Interface output')).toHaveValue(props.directions[0].sampleOutput);
 
     fireEvent.change(screen.getByLabelText('JSON input'), { target: { value: '{"name":"Ada"}' } });
-    await user.click(screen.getByRole('button', { name: 'Convert' }));
+    await user.click(
+      screen.getByRole('button', { name: 'Convert JSON to TypeScript Interface' }),
+    );
 
     expect(screen.getByLabelText('TypeScript Interface output')).toHaveValue(
       'export interface Root {\n  name: string;\n}',
@@ -61,7 +63,9 @@ describe('ConverterTool', () => {
 
     await user.clear(input);
     fireEvent.change(input, { target: { value: '{\n  invalid\n}' } });
-    await user.click(screen.getByRole('button', { name: 'Convert' }));
+    await user.click(
+      screen.getByRole('button', { name: 'Convert JSON to TypeScript Interface' }),
+    );
 
     expect(screen.getByRole('alert')).toHaveTextContent(/JSON 语法错误.*第 2 行，第 3 列/);
     expect(screen.getByRole('alert')).toHaveClass('text-red-600');
@@ -104,20 +108,54 @@ describe('ConverterTool', () => {
     expect(screen.getByLabelText('TypeScript Interface output')).toHaveValue(props.directions[0].sampleOutput);
   });
 
-  it('双向工具在同页 Swap，并把有效输出作为反向输入', async () => {
+  it('双向工具固定左右格式并在中间提供两个转换方向', async () => {
     const user = userEvent.setup();
     render(<ConverterTool {...bidirectionalProps} />);
 
-    await user.click(screen.getByRole('button', { name: 'Swap direction' }));
+    const leftInput = screen.getByLabelText('Text input');
+    const rightInput = screen.getByLabelText('Base64 input');
+    const directionGroup = screen.getByRole('group', { name: 'Conversion direction' });
 
-    expect(screen.getByLabelText('Base64 input')).toHaveValue('SGVsbG8=');
-    expect(screen.getByLabelText('Text output')).toHaveValue('Hello');
+    expect(leftInput).not.toHaveAttribute('readonly');
+    expect(rightInput).not.toHaveAttribute('readonly');
+    expect(directionGroup).toContainElement(
+      screen.getByRole('button', { name: 'Convert Text to Base64' }),
+    );
+    expect(directionGroup).toContainElement(
+      screen.getByRole('button', { name: 'Convert Base64 to Text' }),
+    );
+    expect(screen.queryByRole('button', { name: 'Swap direction' })).not.toBeInTheDocument();
+
+    await user.clear(leftInput);
+    await user.type(leftInput, 'Codex');
+    await user.click(screen.getByRole('button', { name: 'Convert Text to Base64' }));
+    expect(rightInput).toHaveValue('Q29kZXg=');
+
+    await user.clear(rightInput);
+    await user.type(rightInput, 'V29ybGQ=');
+    await user.click(screen.getByRole('button', { name: 'Convert Base64 to Text' }));
+
+    expect(leftInput).toHaveValue('World');
     expect(window.location.pathname).toBe('/');
   });
 
-  it('单向生成器不显示 Swap', () => {
+  it('单向生成器只显示正向按钮并保持输出只读', () => {
     render(<ConverterTool {...props} />);
     expect(screen.queryByRole('button', { name: 'Swap direction' })).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Convert JSON to TypeScript Interface' }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('TypeScript Interface output')).toHaveAttribute('readonly');
+  });
+
+  it('反向转换后 Copy 使用左侧最新结果', async () => {
+    render(<ConverterTool {...bidirectionalProps} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Convert Base64 to Text' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Copy to Clipboard' }));
+    await act(async () => Promise.resolve());
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith('Hello');
   });
 
   it('Download 使用目标扩展名并释放 object URL', () => {
