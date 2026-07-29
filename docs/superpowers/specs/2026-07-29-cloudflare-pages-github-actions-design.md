@@ -34,10 +34,10 @@ GitHub Actions 自行执行测试、构建并通过 Wrangler 上传预构建的 
 
 ## Cloudflare 资源
 
-- Pages project name：`devformat-tools-lwpk110`。
+- Pages project name：`devformat-tools`。
 - Production branch：`main`。
 - Build output：`dist/`。
-- 初始 Production URL：优先使用 `https://devformat-tools-lwpk110.pages.dev/`；若 Cloudflare 报告名称已占用，则在创建资源时改用 Cloudflare 返回可用的唯一名称，并同步更新 workflow 与文档。
+- 初始 Production URL：`https://devformat-tools.pages.dev/`。该名称由维护者创建的真实 Cloudflare Pages 资源确认，并已同步到 workflow 与文档。
 - Preview：Wrangler 根据非 `main` Git branch 创建 Preview deployment，并返回唯一 deployment URL 与 branch alias URL。
 - 本次不新增 KV、D1、R2、Workers、域名、DNS 记录或付费资源。
 

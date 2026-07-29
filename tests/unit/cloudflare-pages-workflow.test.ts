@@ -72,7 +72,7 @@ describe('Cloudflare Pages workflow 契约', () => {
         apiToken: '${{ secrets.CLOUDFLARE_API_TOKEN }}',
         accountId: '${{ secrets.CLOUDFLARE_ACCOUNT_ID }}',
         wranglerVersion: '4',
-        command: 'pages deploy dist --project-name=devformat-tools-lwpk110',
+        command: 'pages deploy dist --project-name=devformat-tools',
         gitHubToken: '${{ secrets.GITHUB_TOKEN }}',
       },
     });

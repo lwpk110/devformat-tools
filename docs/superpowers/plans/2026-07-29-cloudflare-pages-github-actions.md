@@ -12,7 +12,7 @@
 
 - 关联 GitHub Issue 固定为 `lwpk110/devformat-tools#3`，功能分支固定为 `feat/3-cloudflare-pages`。
 - 不修改或接管现有 `https://devformat.tools/`，只使用 Cloudflare 免费 `*.pages.dev` 地址。
-- Pages project name 固定为 `devformat-tools-lwpk110`；若真实创建时 Cloudflare 明确报告名称冲突，必须先同步修改设计、计划、workflow 与 Issue 后再继续。
+- Pages project name 固定为维护者已创建并确认的 `devformat-tools`；若后续 Cloudflare 明确报告名称冲突，必须先同步修改设计、计划、workflow 与 Issue 后再继续。
 - Production branch 固定为 `main`，构建输出固定为 `dist/`。
 - GitHub Actions 权限只能是 `contents: read` 与 `deployments: write`。
 - Cloudflare secret 名称固定为 `CLOUDFLARE_ACCOUNT_ID` 与 `CLOUDFLARE_API_TOKEN`；token 权限固定为 `Account / Cloudflare Pages / Edit`。
@@ -120,7 +120,7 @@ describe('Cloudflare Pages workflow 契约', () => {
         apiToken: '${{ secrets.CLOUDFLARE_API_TOKEN }}',
         accountId: '${{ secrets.CLOUDFLARE_ACCOUNT_ID }}',
         wranglerVersion: '4',
-        command: 'pages deploy dist --project-name=devformat-tools-lwpk110',
+        command: 'pages deploy dist --project-name=devformat-tools',
         gitHubToken: '${{ secrets.GITHUB_TOKEN }}',
       },
     });
@@ -202,7 +202,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: "4"
-          command: pages deploy dist --project-name=devformat-tools-lwpk110
+          command: pages deploy dist --project-name=devformat-tools
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
       - name: Publish deployment URLs
         env:
@@ -255,7 +255,7 @@ Expected: 新提交只包含 workflow 与其契约测试，不包含 token、构
 
 **Files:**
 - External: Cloudflare account API token
-- External: Cloudflare Pages project `devformat-tools-lwpk110`
+- External: Cloudflare Pages project `devformat-tools`
 - External: GitHub repository secrets `CLOUDFLARE_ACCOUNT_ID`、`CLOUDFLARE_API_TOKEN`
 
 **Interfaces:**
@@ -294,7 +294,7 @@ Expected: 命令不回显 token，Account ID 是 32 位小写十六进制字符�
 Run:
 
 ```bash
-cloudflare_pages_project='devformat-tools-lwpk110'
+cloudflare_pages_project='devformat-tools'
 cloudflare_project_status="$(curl --silent --output /tmp/devformat-cloudflare-project.json \
   --write-out '%{http_code}' \
   --header "Authorization: Bearer ${cloudflare_pages_api_token}" \
@@ -305,7 +305,7 @@ if test "$cloudflare_project_status" = '404'; then
     --request POST \
     --header "Authorization: Bearer ${cloudflare_pages_api_token}" \
     --header 'Content-Type: application/json' \
-    --data '{"name":"devformat-tools-lwpk110","production_branch":"main"}' \
+    --data '{"name":"devformat-tools","production_branch":"main"}' \
     "https://api.cloudflare.com/client/v4/accounts/${cloudflare_pages_account_id}/pages/projects" \
     > /tmp/devformat-cloudflare-project.json
 elif test "$cloudflare_project_status" != '200'; then
@@ -315,12 +315,12 @@ fi
 
 jq -e '
   .success == true and
-  .result.name == "devformat-tools-lwpk110" and
+  .result.name == "devformat-tools" and
   .result.production_branch == "main"
 ' /tmp/devformat-cloudflare-project.json
 ```
 
-Expected: project 存在或成功创建，API 响应确认名称为 `devformat-tools-lwpk110`、Production branch 为 `main`。若创建返回名称冲突，停止并按 Global Constraints 同步变更，不自动猜测新名称。
+Expected: project 存在或成功创建，API 响应确认名称为 `devformat-tools`、Production branch 为 `main`。若创建返回名称冲突，停止并按 Global Constraints 同步变更，不自动猜测新名称。
 
 - [ ] **Step 4: 将凭据安全写入 GitHub repository secrets**
 
