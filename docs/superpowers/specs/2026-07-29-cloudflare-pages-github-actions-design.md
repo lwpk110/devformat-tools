@@ -37,11 +37,11 @@ GitHub Actions 自行执行测试、构建并通过 Wrangler 上传预构建的 
 - Pages project name：`devformat-tools`。
 - Production branch：`main`。
 - Build output：`dist/`。
-- 初始 Production URL：`https://devformat-tools.pages.dev/`。该名称由维护者创建的真实 Cloudflare Pages 资源确认，并已同步到 workflow 与文档。
+- 预期 Production URL：`https://devformat-tools.pages.dev/`；只有 Cloudflare API 成功创建同名 Pages project 后才把该地址视为有效资源。
 - Preview：Wrangler 根据非 `main` Git branch 创建 Preview deployment，并返回唯一 deployment URL 与 branch alias URL。
 - 本次不新增 KV、D1、R2、Workers、域名、DNS 记录或付费资源。
 
-Pages project 是部署前唯一需要创建的 Cloudflare 资源。首次创建由维护者提供的 API Token 驱动，后续部署完全由 GitHub Actions 执行。
+Pages project 是部署前唯一需要创建的 Cloudflare 资源。Cloudflare account 中已有名为 `devformat-tools` 的 Worker，但 Pages API 返回项目不存在；Worker 不作为 Pages project 使用，也不由本 workflow 修改。经用户批准，GitHub Actions 使用既有最小权限 Token 幂等查询或创建同名 Direct Upload Pages project。
 
 ## Workflow 架构
 
@@ -63,29 +63,35 @@ checkout
 → npm run check
 → npm run build
 → npm test
+→ 查询或创建 Cloudflare Pages project
 → cloudflare/wrangler-action@v3 pages deploy dist
 → 写入无敏感信息的部署 URL 到 Job Summary
 ```
 
-部署步骤向 Wrangler Action 传入两个 Cloudflare secrets、GitHub 自动 token、`dist` 和固定 Pages project name。Wrangler 从 Git metadata 识别当前 branch；workflow 不拼接未经处理的 branch 名到 shell 命令。
+项目初始化步骤仅在完整质量门禁通过后运行。它通过 Cloudflare REST API 查询固定 Pages project：HTTP 200 时验证名称和 Production branch；HTTP 404 时创建 `devformat-tools`，Production branch 固定为 `main`；并发创建返回冲突时重新查询并验证最终资源；其他 HTTP 状态或响应契约不匹配时立即失败。响应暂存于 runner 的临时目录并在 step 退出时删除，不输出 API body、Token 或 Account ID。
+
+随后部署步骤向 Wrangler Action 传入两个 Cloudflare secrets、GitHub 自动 token、`dist` 和固定 Pages project name。Wrangler 从 Git metadata 识别当前 branch；workflow 不拼接未经处理的 branch 名到 shell 命令。
 
 ## 数据流与发布语义
 
 1. 开发者 push 功能分支。
 2. GitHub Actions 从该 commit 安装锁定依赖并执行完整质量门禁。
 3. 门禁失败时 workflow 终止，不调用 Cloudflare。
-4. 门禁通过后 Wrangler 上传同一次运行生成的 `dist/`。
-5. Cloudflare 返回 deployment URL；Wrangler Action 创建 GitHub Deployment 并输出 URL。
-6. workflow 将 deployment URL 写入 Job Summary，便于直接访问 Preview。
-7. 功能分支后续 push 替换该 branch 的最新 Preview；唯一 commit deployment URL 仍可追溯。
-8. `main` push 使用 Pages project 的 Production branch 配置发布 Production。
+4. 门禁通过后，workflow 查询 Pages project；不存在时创建，存在时验证其 Production branch 为 `main`。
+5. Wrangler 上传同一次运行生成的 `dist/`。
+6. Cloudflare 返回 deployment URL；Wrangler Action 创建 GitHub Deployment 并输出 URL。
+7. workflow 将 deployment URL 写入 Job Summary，便于直接访问 Preview。
+8. 功能分支后续 push 替换该 branch 的最新 Preview；唯一 commit deployment URL 仍可追溯。
+9. `main` push 使用 Pages project 的 Production branch 配置发布 Production。
 
 ## 错误处理
 
 - 缺失 Account ID 或 API Token：部署步骤失败，不降级为匿名上传，也不跳过质量门禁。
 - Token 权限不足：保留 Actions 日志中的 Cloudflare 错误码，但不打印 token；修正权限后使用 `workflow_dispatch` 重试。
-- Pages project 不存在：先在受控环境创建项目，再重试 workflow；workflow 本身不在每次运行时隐式创建基础设施。
-- Pages project name 冲突：选择唯一名称，并同步修改 workflow、GitHub Issue 与本文档。
+- Pages project 不存在：初始化步骤使用 Cloudflare REST API 创建；创建失败时停止，不执行 Wrangler 上传。
+- Pages project 已存在但 Production branch 不是 `main`：停止部署，不隐式修改既有资源配置。
+- 多分支首次部署并发创建：创建冲突的一方重新查询并验证最终资源，验证失败时停止。
+- Pages project name 冲突：停止自动创建，不猜测新名称；确认唯一名称后同步修改 workflow、GitHub Issue 与本文档。
 - 质量测试疑似 flaky：最多重试一次；再次失败按真实故障处理，不强行部署。
 - Cloudflare 上传失败：Production 保持上一成功版本，Preview 不更新；不修改 DNS 或现有 `devformat.tools`。
 - 同分支并发部署：由 GitHub concurrency 取消较旧运行。
@@ -99,6 +105,9 @@ checkout
 - concurrency 按 ref 隔离且取消旧运行；
 - Node.js 为 22，并启用 npm cache；
 - 严格按顺序执行 `npm ci`、`npm run check`、`npm run build`、`npm test`；`npm test` 包含依赖 `dist/` 的产物测试，因此必须位于构建之后；
+- 质量门禁之后、Wrangler 上传之前幂等查询或创建固定 Pages project；
+- 初始化步骤仅引用约定 secrets，不输出 API body、Token 或 Account ID；
+- HTTP 200、404、并发冲突与其他失败状态具有明确分支；
 - 使用 `cloudflare/wrangler-action@v3`；
 - 上传目录为 `dist`，project name 正确；
 - 只引用约定的 Cloudflare secrets 和 GitHub token；
@@ -131,4 +140,4 @@ npm run verify:build
 
 ## 决策确认
 
-用户在查看 Direct Upload、Git Integration 与 OIDC 三种方案后回复“继续”，据此采用方案 A，并授权继续创建 GitHub Issue、隔离分支、设计文档、workflow 和真实临时部署。
+用户在查看 Direct Upload、Git Integration 与 OIDC 三种方案后回复“继续”，据此采用方案 A，并授权继续创建 GitHub Issue、隔离分支、设计文档、workflow 和真实临时部署。真实 CI 后续证明 Cloudflare 中的 `devformat-tools` 是 Worker 而非 Pages project；用户回复 `PIZHUN`，批准 workflow 使用已有 repository secrets 自动、幂等创建 Pages project。该补充决策见 [ADR-002](../../decisions/ADR-002-cloudflare-pages-idempotent-bootstrap.md)。
