@@ -106,9 +106,9 @@ GitHub Actions 对目标为 `main` 的 PR 执行：
 
 ```text
 npm ci
+npm run build
 npm test
 npm run check
-npm run build
 ```
 
 workflow 使用 Node.js 20、依赖缓存、并发取消和 `contents: read` 最小权限。

@@ -420,12 +420,12 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Build
+        run: npm run build
       - name: Test
         run: npm test
       - name: Type check
         run: npm run check
-      - name: Build
-        run: npm run build
 ```
 
 - [ ] **Step 6: 忽略 Agent 本地运行状态并验证 GREEN**

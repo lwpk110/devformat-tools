@@ -24,7 +24,7 @@ npm run dev
 | `npm run verify:build` | 验证页面、SEO、robots 与 sitemap 产物 |
 | `npm run preview` | 本地预览生产构建 |
 
-完整质量门禁：
+本地完整质量门禁（CI 默认执行前三项，不包含产物专项验证与依赖审计）：
 
 ```bash
 npm run build
