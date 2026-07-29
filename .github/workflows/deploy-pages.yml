@@ -1,0 +1,54 @@
+name: Deploy Cloudflare Pages
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: cloudflare-pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Type check
+        run: npm run check
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm test
+      - name: Deploy
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
+          command: pages deploy dist --project-name=devformat-tools-lwpk110
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish deployment URLs
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          DEPLOYMENT_ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+        run: |
+          {
+            printf '### Cloudflare Pages\n\n'
+            printf -- '- Deployment: %s\n' "$DEPLOYMENT_URL"
+            printf -- '- Branch alias: %s\n' "$DEPLOYMENT_ALIAS_URL"
+          } >> "$GITHUB_STEP_SUMMARY"
