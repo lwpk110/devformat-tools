@@ -36,10 +36,20 @@ const steps = workflow.jobs.deploy.steps;
 describe('Cloudflare Pages workflow 契约', () => {
   it('支持任意 branch push 与手动部署，并按 ref 取消旧运行', () => {
     expect(Object.keys(workflow.on).sort()).toEqual(['push', 'workflow_dispatch']);
+    expect(workflow.on.push).toEqual({
+      branches: ['**'],
+      'tags-ignore': ['**'],
+    });
     expect(workflow.concurrency).toEqual({
       group: 'cloudflare-pages-${{ github.ref }}',
       'cancel-in-progress': true,
     });
+  });
+
+  it('与标准 CI 使用相同 major 版本的 checkout action', () => {
+    expect(steps.find((step) => step.name === 'Checkout')?.uses).toBe(
+      'actions/checkout@v4',
+    );
   });
 
   it('只授予读取源码和写入 Deployment 的权限', () => {
