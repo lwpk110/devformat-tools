@@ -68,8 +68,11 @@ export async function ensurePagesProject(config, { fetchImpl = fetch } = {}) {
       project: validateProject(await readJson(create), projectName, productionBranch),
     };
   }
+  if (create.status !== 409) {
+    throw new Error(`Cloudflare Pages project creation failed with HTTP ${create.status}`);
+  }
 
-  // 首次多分支部署可能同时观察到 404；创建失败后只重查，不覆盖资源。
+  // 首次多分支部署可能同时观察到 404；仅并发冲突时重查，不覆盖资源。
   const afterCreate = await queryProject(collectionUrl, projectName, apiToken, fetchImpl);
   if (afterCreate.status === 200) {
     return {
@@ -81,7 +84,9 @@ export async function ensurePagesProject(config, { fetchImpl = fetch } = {}) {
       ),
     };
   }
-  throw new Error(`Cloudflare Pages project creation failed with HTTP ${create.status}`);
+  throw new Error(
+    `Cloudflare Pages project race query failed with HTTP ${afterCreate.status}`,
+  );
 }
 
 export async function runFromEnvironment(env = process.env, fetchImpl = fetch) {

@@ -109,6 +109,28 @@ describe('Cloudflare Pages project 初始化器', () => {
     expect(stub.calls).toHaveLength(3);
   });
 
+  it('创建返回非冲突错误时立即失败且不重新查询', async () => {
+    const stub = createFetchStub([apiResponse(404), apiResponse(500)]);
+
+    await expect(
+      ensurePagesProject(config, { fetchImpl: stub.fetchImpl }),
+    ).rejects.toThrow('creation failed with HTTP 500');
+    expect(stub.calls).toHaveLength(2);
+  });
+
+  it('并发冲突重查失败时报告重查状态', async () => {
+    const stub = createFetchStub([
+      apiResponse(404),
+      apiResponse(409),
+      apiResponse(503),
+    ]);
+
+    await expect(
+      ensurePagesProject(config, { fetchImpl: stub.fetchImpl }),
+    ).rejects.toThrow('race query failed with HTTP 503');
+    expect(stub.calls).toHaveLength(3);
+  });
+
   it('拒绝 Production branch 漂移的现有项目', async () => {
     const stub = createFetchStub([
       apiResponse(200, { name: 'devformat-tools', production_branch: 'production' }),
