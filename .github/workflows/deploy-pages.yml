@@ -1,0 +1,65 @@
+name: Deploy Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - "**"
+    tags-ignore:
+      - "**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: cloudflare-pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Type check
+        run: npm run check
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm test
+      - name: Ensure Cloudflare Pages project
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_PAGES_PROJECT: devformat-tools
+          CLOUDFLARE_PAGES_PRODUCTION_BRANCH: main
+        run: node .github/scripts/ensure-pages-project.mjs
+      - name: Deploy
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
+          command: pages deploy dist --project-name=devformat-tools
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish deployment URLs
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          DEPLOYMENT_ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+        run: |
+          {
+            printf '### Cloudflare Pages\n\n'
+            printf -- '- Deployment: %s\n' "$DEPLOYMENT_URL"
+            printf -- '- Branch alias: %s\n' "$DEPLOYMENT_ALIAS_URL"
+          } >> "$GITHUB_STEP_SUMMARY"
