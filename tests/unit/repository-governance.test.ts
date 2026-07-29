@@ -1,9 +1,10 @@
 import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { describe, expect, test } from 'vitest'
 import { parse } from 'yaml'
 
-const root = resolve(import.meta.dirname, '../..')
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const read = (path: string) => readFileSync(resolve(root, path), 'utf8')
 
 describe('仓库交付治理契约', () => {
@@ -48,11 +49,11 @@ describe('仓库交付治理契约', () => {
     expect(workflow.permissions).toEqual({ contents: 'read' })
     expect(workflow.jobs.quality['timeout-minutes']).toBe(15)
     const steps = workflow.jobs.quality.steps
-    expect(
-      steps.find((step: { uses?: string }) => step.uses === 'actions/setup-node@v4').with[
-        'node-version'
-      ],
-    ).toBe(20)
+    const setupNodeStep = steps.find(
+      (step: { uses?: string }) => step.uses === 'actions/setup-node@v4',
+    )
+    expect(setupNodeStep).toBeDefined()
+    expect(setupNodeStep?.with?.['node-version']).toBe(20)
     expect(steps.map((step: { run?: string }) => step.run).filter(Boolean)).toEqual([
       'npm ci',
       'npm run build',
