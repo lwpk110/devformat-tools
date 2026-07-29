@@ -30,7 +30,7 @@
 - Consumes: Codex 的 skills 自动发现机制、Git CLI、仓库级 `AGENTS.md` 与贡献文档。
 - Produces: 可通过 `$git-commit` 显式调用、也可由提交类请求隐式触发的用户级 skill。
 
-- [ ] **Step 1: 验证目标尚不存在**
+- [x] **Step 1: 验证目标尚不存在**
 
 Run:
 
@@ -40,7 +40,7 @@ test ! -e /home/luwei/.codex/skills/git-commit
 
 Expected: 退出码为 `0`，没有输出。若目录已经存在，停止并将任务转为更新现有 skill，禁止覆盖。
 
-- [ ] **Step 2: 使用官方初始化器创建最小目录结构**
+- [x] **Step 2: 使用官方初始化器创建最小目录结构**
 
 Run:
 
@@ -55,7 +55,7 @@ python /home/luwei/.codex/skills/.system/skill-creator/scripts/init_skill.py \
 
 Expected: 创建 `git-commit/SKILL.md` 和 `git-commit/agents/openai.yaml`，不创建 `scripts/`、`references/` 或 `assets/`。
 
-- [ ] **Step 3: 用完整工作流替换 SKILL.md 模板**
+- [x] **Step 3: 用完整工作流替换 SKILL.md 模板**
 
 将 `/home/luwei/.codex/skills/git-commit/SKILL.md` 写为：
 
@@ -128,7 +128,7 @@ description: 安全检查、组织并提交 Git 改动。用户要求提交代�
 - 仅当用户明确要求 push 时推送普通分支；推送失败时报告，不自动改写历史。
 ```
 
-- [ ] **Step 4: 检查生成的 UI 元数据**
+- [x] **Step 4: 检查生成的 UI 元数据**
 
 确认 `/home/luwei/.codex/skills/git-commit/agents/openai.yaml` 内容为：
 
@@ -139,7 +139,7 @@ interface:
   default_prompt: "使用 $git-commit 检查当前改动并创建符合仓库规范的原子提交。"
 ```
 
-- [ ] **Step 5: 运行官方结构校验**
+- [x] **Step 5: 运行官方结构校验**
 
 Run:
 
@@ -160,7 +160,7 @@ Expected: 输出 `Skill is valid!` 并以退出码 `0` 结束。
 - Consumes: Task 1 创建的 skill 文件。
 - Produces: 对触发范围、提交格式、原子拆分、amend、验证失败和 push 边界的静态证据。
 
-- [ ] **Step 1: 检查 skill 中不存在模板占位符**
+- [x] **Step 1: 检查 skill 中不存在模板占位符**
 
 Run:
 
@@ -172,7 +172,7 @@ fi
 
 Expected: 没有输出，退出码为 `0`。
 
-- [ ] **Step 2: 检查关键场景均有明确规则**
+- [x] **Step 2: 检查关键场景均有明确规则**
 
 Run:
 
@@ -183,7 +183,7 @@ rg -n '自动创建多个原子提交|验证失败.*停止|尚未推送|已被�
 
 Expected: 六类约束均至少匹配一行；缺少任一类则补齐 `SKILL.md` 后重新校验。
 
-- [ ] **Step 3: 检查危险操作均被禁止**
+- [x] **Step 3: 检查危险操作均被禁止**
 
 Run:
 
@@ -194,7 +194,7 @@ rg -n 'force push|reset|rebase|删除文件|已推送历史|--no-verify' \
 
 Expected: 每个危险操作均出现在明确的禁止语境中。
 
-- [ ] **Step 4: 复核最终文件边界**
+- [x] **Step 4: 复核最终文件边界**
 
 Run:
 
@@ -209,7 +209,7 @@ SKILL.md
 agents/openai.yaml
 ```
 
-- [ ] **Step 5: 再次运行官方校验并确认 Codex 可发现目录**
+- [x] **Step 5: 再次运行官方校验并确认 Codex 可发现目录**
 
 Run:
 
@@ -230,7 +230,7 @@ Expected: 输出 `Skill is valid!`，并显示 `/home/luwei/.codex/skills/git-co
 - Consumes: Task 1–2 的实际执行与校验结果。
 - Produces: 可审计的计划完成状态；全局 skill 本身不写入当前项目仓库。
 
-- [ ] **Step 1: 勾选已完成步骤并复核项目工作区**
+- [x] **Step 1: 勾选已完成步骤并复核项目工作区**
 
 Run:
 
@@ -240,7 +240,7 @@ git status --short --branch
 
 Expected: 除本计划的完成标记外，没有来源不明的项目改动。
 
-- [ ] **Step 2: 提交计划完成记录**
+- [x] **Step 2: 提交计划完成记录**
 
 Run:
 
