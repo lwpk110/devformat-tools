@@ -79,14 +79,14 @@ input string
 
 ### GREEN
 
+隔离 worktree 进一步证明 `tests/build/dist.test.ts` 在 clean checkout 中要求 `dist/` 预先存在。因此本 PR 同时引入最小 CI bootstrap，并按“先 build、后 test”的顺序执行门禁；该 workflow 后续会被 Agent Harness Issue #1 复用。
+
 按顺序运行：
 
 ```bash
-npm test -- tests/unit/converters.test.ts
-npm test -- tests/unit/converter-performance.test.ts
+npm run build
 npm test
 npm run check
-npm run build
 ```
 
 性能测试必须在不修改阈值和采样数量的情况下通过。疑似 flaky 只允许重试一次；再次失败则停止交付。
@@ -94,12 +94,13 @@ npm run build
 ## GitHub 交付
 
 1. 在 `fix/2-base64-performance` 创建聚焦修复提交。
-2. 自动 push 分支并创建关联 Issue #2 的 Draft PR。
-3. 本地门禁通过后转为 Ready，请求 Copilot review。
-4. 处理有效 feedback，并等待 GitHub Actions 成功。
-5. 对 PR diff 执行 secret scanning。
-6. 条件全部满足后自动 squash merge，关闭 Issue #2 并删除分支。
-7. 将 Agent Harness 分支合并最新 `origin/main`，重新运行其完整门禁。
+2. 增加 clean checkout 可运行的最小 GitHub Actions CI，执行 `build → test → check`。
+3. 自动 push 分支并创建关联 Issue #2 的 Draft PR。
+4. 本地门禁通过后转为 Ready，请求 Copilot review。
+5. 处理有效 feedback，并等待 GitHub Actions 成功。
+6. 对 PR diff 执行 secret scanning。
+7. 条件全部满足后自动 squash merge，关闭 Issue #2 并删除分支。
+8. 将 Agent Harness 分支合并最新 `origin/main`，重新运行其完整门禁。
 
 ## 完成标准
 

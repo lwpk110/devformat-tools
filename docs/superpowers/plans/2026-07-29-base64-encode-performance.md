@@ -144,6 +144,7 @@ Expected: diff 无空白错误；`Buffer` 无匹配；chunk 常量和 helper 各
 ### Task 3: 完整验证、原子提交和 push
 
 **Files:**
+- Create: `.github/workflows/ci.yml`
 - Commit: `docs/superpowers/specs/2026-07-29-base64-encode-performance-design.md`
 - Commit: `docs/superpowers/plans/2026-07-29-base64-encode-performance.md`
 - Commit: `src/lib/converters/base64.ts`
@@ -153,19 +154,71 @@ Expected: diff 无空白错误；`Buffer` 无匹配；chunk 常量和 helper 各
 - Consumes: Task 2 的功能与性能 GREEN。
 - Produces: 已验证、已推送的 `fix/2-base64-performance` 分支。
 
-- [ ] **Step 1: 运行完整质量门禁**
+- [ ] **Step 1: 增加 clean checkout CI bootstrap**
+
+创建 `.github/workflows/ci.yml`：
+
+```yaml
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm test
+      - name: Type check
+        run: npm run check
+```
 
 Run:
 
 ```bash
+node --input-type=module -e "import { readFileSync } from 'node:fs'; import { parse } from 'yaml'; const workflow = parse(readFileSync('.github/workflows/ci.yml', 'utf8')); if (workflow.jobs.quality.steps.map((step) => step.run).filter(Boolean).join(',') !== 'npm ci,npm run build,npm test,npm run check') process.exit(1)"
+```
+
+Expected: YAML 可解析，命令顺序严格为 clean checkout 可执行的 `install → build → test → check`。
+
+- [ ] **Step 2: 运行完整质量门禁**
+
+Run:
+
+```bash
+npm run build
 npm test
 npm run check
-npm run build
 ```
 
 Expected: 全部测试 PASS，Astro diagnostics 为 0 errors/0 warnings，生产构建成功。
 
-- [ ] **Step 2: 创建聚焦修复提交**
+- [ ] **Step 3: 创建聚焦修复提交**
 
 Run:
 
@@ -177,11 +230,14 @@ git commit -m 'fix(base64): 优化大文本编码性能' -m 'Refs #2'
 
 Expected: 创建只包含实现和直接测试的原子 commit；设计文档提交与实施提交保持分离。
 
-- [ ] **Step 3: 自动 push 性能分支**
+- [ ] **Step 4: 创建 CI 提交并自动 push 性能分支**
 
 Run:
 
 ```bash
+git add .github/workflows/ci.yml
+git diff --cached --check
+git commit -m 'ci: 修正 clean checkout 质量门禁顺序' -m 'Refs #1, #2'
 git push -u origin fix/2-base64-performance
 git ls-remote --exit-code --heads origin fix/2-base64-performance
 ```
