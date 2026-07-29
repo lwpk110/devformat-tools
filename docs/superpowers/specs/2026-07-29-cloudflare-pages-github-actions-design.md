@@ -60,9 +60,9 @@ Pages project 是部署前唯一需要创建的 Cloudflare 资源。首次创建
 checkout
 → setup Node.js 22 + npm cache
 → npm ci
-→ npm test
 → npm run check
 → npm run build
+→ npm test
 → cloudflare/wrangler-action@v3 pages deploy dist
 → 写入无敏感信息的部署 URL 到 Job Summary
 ```
@@ -98,7 +98,7 @@ checkout
 - 权限只有 `contents: read`、`deployments: write`；
 - concurrency 按 ref 隔离且取消旧运行；
 - Node.js 为 22，并启用 npm cache；
-- 严格按顺序执行 `npm ci`、`npm test`、`npm run check`、`npm run build`；
+- 严格按顺序执行 `npm ci`、`npm run check`、`npm run build`、`npm test`；`npm test` 包含依赖 `dist/` 的产物测试，因此必须位于构建之后；
 - 使用 `cloudflare/wrangler-action@v3`；
 - 上传目录为 `dist`，project name 正确；
 - 只引用约定的 Cloudflare secrets 和 GitHub token；
@@ -107,9 +107,9 @@ checkout
 本地门禁：
 
 ```bash
-npm test
 npm run check
 npm run build
+npm test
 npm run verify:build
 ```
 

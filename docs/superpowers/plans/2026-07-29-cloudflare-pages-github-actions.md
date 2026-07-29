@@ -17,7 +17,7 @@
 - GitHub Actions 权限只能是 `contents: read` 与 `deployments: write`。
 - Cloudflare secret 名称固定为 `CLOUDFLARE_ACCOUNT_ID` 与 `CLOUDFLARE_API_TOKEN`；token 权限固定为 `Account / Cloudflare Pages / Edit`。
 - secret 不得写入仓库、测试、日志、Job Summary、Issue 或 PR。
-- workflow 必须使用 Node.js 22 与 Wrangler 4，执行 `npm ci`、`npm test`、`npm run check`、`npm run build` 后才允许部署。
+- workflow 必须使用 Node.js 22 与 Wrangler 4，执行 `npm ci`、`npm run check`、`npm run build`、`npm test` 后才允许部署；现有 `npm test` 包含依赖 `dist/` 的产物测试，必须位于构建之后。
 - 任意 branch push 触发部署：`main` 发布 Production，其他 branch 发布 Preview；同时支持 `workflow_dispatch`。
 - 不新增 KV、D1、R2、Workers、DNS、自定义域名、Cloudflare Git Integration 或付费资源。
 - 禁止直接向 `main` commit/push、force push、跳过 hooks 或重写已推送历史。
@@ -106,9 +106,9 @@ describe('Cloudflare Pages workflow 契约', () => {
 
     expect(steps.flatMap((step) => step.run ?? []).slice(0, 4)).toEqual([
       'npm ci',
-      'npm test',
       'npm run check',
       'npm run build',
+      'npm test',
     ]);
   });
 
@@ -189,12 +189,12 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Test
-        run: npm test
       - name: Type check
         run: npm run check
       - name: Build
         run: npm run build
+      - name: Test
+        run: npm test
       - name: Deploy
         id: deploy
         uses: cloudflare/wrangler-action@v3
@@ -231,9 +231,9 @@ Expected: PASS，6 个 workflow 契约用例全部通过。
 Run:
 
 ```bash
-npm test
 npm run check
 npm run build
+npm test
 npm run verify:build
 ```
 
