@@ -1,0 +1,39 @@
+name: 功能需求
+description: 提议一个可验证的产品或工程能力
+title: "feat: "
+labels:
+  - type:feature
+  - status:ready
+body:
+  - type: markdown
+    attributes:
+      value: 请描述问题和目标，不要只描述实现方案。
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景与问题
+      description: 当前存在什么问题，影响哪些用户或维护者？
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: 目标结果
+      description: 完成后应观察到什么结果？
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收标准与原子任务
+      description: 使用 checklist 描述可独立验证的结果和任务。
+      placeholder: "- [ ] 验收结果或原子任务"
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: 风险与限制
+      description: 兼容性、安全、性能或交付限制。
+    validations:
+      required: false

@@ -3,6 +3,7 @@ dist/
 .astro/
 .claude/
 .claude-flow/
+.superpowers/
 .lighthouseci/
 docs/verification/lighthouse/
 npm-debug.log*

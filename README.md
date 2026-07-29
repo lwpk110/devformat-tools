@@ -27,9 +27,9 @@ npm run dev
 完整质量门禁：
 
 ```bash
+npm run build
 npm test
 npm run check
-npm run build
 npm run verify:build
 npm audit --omit=dev --registry=https://registry.npmjs.org
 ```
