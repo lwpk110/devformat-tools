@@ -1,11 +1,19 @@
 import { ConversionError } from './utils';
 
+const BINARY_CHUNK_SIZE = 0x8000;
+
+function bytesToBinary(bytes: Uint8Array): string {
+  const chunks: string[] = [];
+  for (let offset = 0; offset < bytes.length; offset += BINARY_CHUNK_SIZE) {
+    const chunk = bytes.subarray(offset, offset + BINARY_CHUNK_SIZE);
+    chunks.push(String.fromCharCode(...chunk));
+  }
+  return chunks.join('');
+}
+
 export function encodeBase64(input: string): string {
   if (!input) throw new ConversionError('请输入要编码的文本');
-  const bytes = new TextEncoder().encode(input);
-  let binary = '';
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary);
+  return btoa(bytesToBinary(new TextEncoder().encode(input)));
 }
 
 export function decodeBase64(input: string): string {

@@ -40,6 +40,13 @@ describe('高频双向转换', () => {
     expect(() => convert('base64-decode', '%%%')).toThrow(ConversionError);
   });
 
+  it('Base64 对跨 chunk 的 Unicode 文本保持可逆', () => {
+    const input = '开发者🚀'.repeat(8192);
+    const encoded = convert('base64-encode', input);
+
+    expect(convert('base64-decode', encoded)).toBe(input);
+  });
+
   it('YAML 与 JSON 支持 nested object 和 array', () => {
     const yaml = convert('json-to-yaml', '{"service":"api","ports":[80,443]}');
     expect(yaml).toContain('service: api');
