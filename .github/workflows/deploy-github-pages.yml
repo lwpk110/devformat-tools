@@ -17,8 +17,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # 先探测 Pages 是否启用：仓库可见性或 plan 不满足时 API 返回 404，
+  # 此时跳过构建与部署，使 main 上的 run 保持 success 而非红叉
+  check-pages:
+    name: 检查 Pages 启用状态
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.check.outputs.enabled }}
+    steps:
+      - name: 检查是否启用 Pages
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::GitHub Pages 已启用，继续构建与部署"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::GitHub Pages 未启用（仓库可见性或 plan 限制），跳过本次部署"
+          fi
+
   build:
     name: 构建
+    needs: check-pages
+    if: needs.check-pages.outputs.enabled == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -50,7 +73,8 @@ jobs:
 
   deploy:
     name: 部署
-    needs: build
+    needs: [build, check-pages]
+    if: needs.check-pages.outputs.enabled == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
