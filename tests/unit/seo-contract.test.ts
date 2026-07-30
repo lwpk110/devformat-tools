@@ -38,6 +38,8 @@ describe('Astro SEO 源契约', () => {
     expect(source).toContain("'@type': 'FAQPage'");
     expect(source).toContain("'@type': 'Question'");
     expect(source).toContain('converter.faq.map');
+    // 正文内容区组件用于消除 thin content
+    expect(source).toContain('ContentSection');
   });
 
   it('转换路由由 converters.json 通过 getStaticPaths 生成', () => {
