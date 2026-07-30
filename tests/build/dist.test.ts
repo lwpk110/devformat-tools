@@ -9,7 +9,7 @@ import converters from '../../src/data/converters.json';
 const dist = join(process.cwd(), 'dist');
 
 // 与 astro.config 的 SITE_URL/BASE_PATH 保持一致，默认面向 Cloudflare 根路径部署
-const SITE = process.env.SITE_URL ?? 'https://devformat.tools';
+const SITE = process.env.SITE_URL ?? 'https://devformat-tools.pages.dev';
 const rawBase = process.env.BASE_PATH ?? '/';
 const baseUrl = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
 
@@ -74,10 +74,11 @@ describe('静态构建产物', () => {
     }
   });
 
-  it('未配置监控 token 时不注入 Cloudflare beacon 与 Google 验证 meta', () => {
+  it('所有页面注入 Cloudflare Web Analytics beacon 与 Google 验证 meta', () => {
     const html = read('index.html');
-    expect(html).not.toContain('cloudflareinsights.com/beacon.min.js');
-    expect(html).not.toContain('google-site-verification');
+    // token 作为公开默认值内置，无论是否配置环境变量均稳定渲染
+    expect(html).toContain('cloudflareinsights.com/beacon.min.js');
+    expect(html).toContain('google-site-verification');
   });
 
   it('旧方向 URL 不生成 HTML，只保留永久重定向配置', () => {
