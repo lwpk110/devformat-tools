@@ -50,6 +50,10 @@ describe('静态构建产物', () => {
     expect(html).toContain('Nothing is uploaded.');
     expect(html).not.toContain('fonts.googleapis.com');
 
+    // 转换页在 SoftwareApplication 之外另输出 FAQPage 结构化数据
+    expect(html).toContain('"@type":"FAQPage"');
+    expect(html).toContain('"@type":"Question"');
+
     const jsonLd = extractJsonLd(html);
     expect(jsonLd).toMatchObject({
       '@context': 'https://schema.org',
