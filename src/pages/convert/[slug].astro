@@ -25,10 +25,21 @@ const displayName = converter.directions.length > 1
   : `${firstDirection.from} → ${firstDirection.to}`;
 const related = converters.filter(({ slug }) => slug !== converter.slug).slice(0, 4);
 const baseUrl = import.meta.env.BASE_URL;
+// FAQPage 结构化数据：将页面 FAQ 转为 schema.org 富搜索结果格式
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: converter.faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
 ---
 
 <Layout title={converter.title} description={converter.description} canonical={`/convert/${converter.slug}/`}>
   <article class="mx-auto max-w-6xl px-5 pb-8 pt-10 sm:px-8 sm:pt-14">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqStructuredData)} />
     <nav aria-label="Breadcrumb" class="mb-8 text-sm text-stone-500">
       <a href={baseUrl} class="underline-offset-4 hover:text-teal-800 hover:underline">All tools</a>
       <span aria-hidden="true" class="mx-2 text-stone-300">/</span>

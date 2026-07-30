@@ -50,6 +50,10 @@ describe('静态构建产物', () => {
     expect(html).toContain('Nothing is uploaded.');
     expect(html).not.toContain('fonts.googleapis.com');
 
+    // 转换页在 SoftwareApplication 之外另输出 FAQPage 结构化数据
+    expect(html).toContain('"@type":"FAQPage"');
+    expect(html).toContain('"@type":"Question"');
+
     const jsonLd = extractJsonLd(html);
     expect(jsonLd).toMatchObject({
       '@context': 'https://schema.org',
@@ -68,6 +72,12 @@ describe('静态构建产物', () => {
       expect(html).toContain(`href="${baseUrl}convert/${converter.slug}/"`);
       expect(html).toContain(converter.directions[0].to);
     }
+  });
+
+  it('未配置监控 token 时不注入 Cloudflare beacon 与 Google 验证 meta', () => {
+    const html = read('index.html');
+    expect(html).not.toContain('cloudflareinsights.com/beacon.min.js');
+    expect(html).not.toContain('google-site-verification');
   });
 
   it('旧方向 URL 不生成 HTML，只保留永久重定向配置', () => {

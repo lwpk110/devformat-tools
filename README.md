@@ -74,6 +74,17 @@ GitHub Pages 自动部署（`.github/workflows/deploy-github-pages.yml`）：pus
 npx -y @lhci/cli@0.15.1 autorun
 ```
 
+## 监控与 SEO
+
+网站监控与搜索验证通过构建时环境变量注入，未配置时不渲染对应标签，不影响部署。
+
+| 环境变量 | 用途 | 获取方式 |
+|---|---|---|
+| `PUBLIC_CF_ANALYTICS_TOKEN` | Cloudflare Web Analytics 访问监控（隐私友好、无 cookie） | Cloudflare Dashboard → Web Analytics → Add a site，复制 beacon token |
+| `PUBLIC_GOOGLE_SITE_VERIFICATION` | Google Search Console 站点所有权验证 | [Search Console](https://search.google.com/search-console) 添加资源，选 HTML 标签验证，复制 `content` 值 |
+
+在 Cloudflare Pages 项目 Settings → Environment variables 配置上述变量。配置后重新部署，所有页面即注入对应标签。`PUBLIC_GOOGLE_SITE_VERIFICATION` 生效后可在 Google Search Console 查看搜索排行、关键词与索引状态。
+
 ## 安全边界
 
 生产部署只包含 `dist/`，Node/Astro/React 均为 build-only `devDependencies`。`npm audit --omit=dev` 对实际生产依赖执行审计；完整 build tool audit 的 Astro 4 历史公告及适用性记录在 [PRD 验收报告](docs/verification/PRD-0.0.1.md)。
