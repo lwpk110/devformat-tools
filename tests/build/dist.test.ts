@@ -55,6 +55,14 @@ describe('静态构建产物', () => {
     expect(html).toContain('"@type":"Question"');
     // 转换页输出 BreadcrumbList 结构化数据
     expect(html).toContain('"@type":"BreadcrumbList"');
+    // 正文内容区覆盖长尾搜索词，标题带锚点
+    expect(html).toContain('About this converter');
+    if (converter.content) {
+      expect(html).toContain(converter.content[0].heading);
+    }
+    // FAQPage 结构化数据覆盖全部 FAQ 条目
+    const questionCount = (html.match(/"@type":"Question"/g) ?? []).length;
+    expect(questionCount).toBe(converter.faq.length);
 
     const jsonLd = extractJsonLd(html);
     expect(jsonLd).toMatchObject({

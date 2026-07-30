@@ -1,5 +1,6 @@
 ---
 import ConverterTool from '../../components/ConverterTool';
+import ContentSection from '../../components/ContentSection.astro';
 import FAQSection from '../../components/FAQSection.astro';
 import convertersData from '../../data/converters.json';
 import Layout from '../../layouts/Layout.astro';
@@ -78,6 +79,8 @@ const breadcrumbStructuredData = {
         </div>
       ))}
     </section>
+
+    {converter.content && <ContentSection sections={converter.content} />}
 
     <FAQSection items={converter.faq} />
 
