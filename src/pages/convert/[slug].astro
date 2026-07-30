@@ -24,12 +24,13 @@ const displayName = converter.directions.length > 1
   ? `${firstDirection.from} ↔ ${firstDirection.to}`
   : `${firstDirection.from} → ${firstDirection.to}`;
 const related = converters.filter(({ slug }) => slug !== converter.slug).slice(0, 4);
+const baseUrl = import.meta.env.BASE_URL;
 ---
 
 <Layout title={converter.title} description={converter.description} canonical={`/convert/${converter.slug}/`}>
   <article class="mx-auto max-w-6xl px-5 pb-8 pt-10 sm:px-8 sm:pt-14">
     <nav aria-label="Breadcrumb" class="mb-8 text-sm text-stone-500">
-      <a href="/" class="underline-offset-4 hover:text-teal-800 hover:underline">All tools</a>
+      <a href={baseUrl} class="underline-offset-4 hover:text-teal-800 hover:underline">All tools</a>
       <span aria-hidden="true" class="mx-2 text-stone-300">/</span>
       <span>{displayName}</span>
     </nav>
@@ -63,7 +64,7 @@ const related = converters.filter(({ slug }) => slug !== converter.slug).slice(0
       <h2 id="related-title" class="text-xl font-semibold tracking-tight text-stone-950">Related tools</h2>
       <div class="mt-4 flex flex-wrap gap-2">
         {related.map((item) => (
-          <a href={`/convert/${item.slug}/`} class="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm text-stone-600 transition hover:border-teal-700 hover:text-teal-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700">
+          <a href={`${baseUrl}convert/${item.slug}/`} class="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm text-stone-600 transition hover:border-teal-700 hover:text-teal-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700">
             {item.directions[0].from}{item.directions.length > 1 ? ' ↔ ' : ' → '}{item.directions[0].to}
           </a>
         ))}
