@@ -79,6 +79,10 @@ describe('静态构建产物', () => {
     // token 作为公开默认值内置，无论是否配置环境变量均稳定渲染
     expect(html).toContain('cloudflareinsights.com/beacon.min.js');
     expect(html).toContain('google-site-verification');
+    // 所有页面输出社交分享卡片 og:image 与 summary_large_image
+    expect(html).toContain('property="og:image"');
+    expect(html).toContain('name="twitter:image"');
+    expect(html).toContain('summary_large_image');
   });
 
   it('旧方向 URL 不生成 HTML，只保留永久重定向配置', () => {

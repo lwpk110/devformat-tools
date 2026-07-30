@@ -22,6 +22,10 @@ describe('Astro SEO 源契约', () => {
     expect(source).toContain('property="og:url"');
     expect(source).toContain('application/ld+json');
     expect(source).toContain("'@type': 'SoftwareApplication'");
+    // 社交分享卡片 og:image 与 twitter:image 注入
+    expect(source).toContain('ogImageUrl');
+    expect(source).toContain('property="og:image"');
+    expect(source).toContain('summary_large_image');
     // 监控与验证 token 通过环境变量注入，未配置时不渲染
     expect(source).toContain('PUBLIC_GOOGLE_SITE_VERIFICATION');
     expect(source).toContain('PUBLIC_CF_ANALYTICS_TOKEN');
