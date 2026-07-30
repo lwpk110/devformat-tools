@@ -74,6 +74,12 @@ describe('静态构建产物', () => {
     }
   });
 
+  it('未配置监控 token 时不注入 Cloudflare beacon 与 Google 验证 meta', () => {
+    const html = read('index.html');
+    expect(html).not.toContain('cloudflareinsights.com/beacon.min.js');
+    expect(html).not.toContain('google-site-verification');
+  });
+
   it('旧方向 URL 不生成 HTML，只保留永久重定向配置', () => {
     expect(existsSync(join(dist, 'convert/json-to-yaml/index.html'))).toBe(false);
     expect(read('_redirects')).toContain('/convert/json-to-yaml/ /convert/json-yaml/ 301');

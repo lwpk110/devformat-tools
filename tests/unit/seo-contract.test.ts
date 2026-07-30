@@ -22,6 +22,18 @@ describe('Astro SEO 源契约', () => {
     expect(source).toContain('property="og:url"');
     expect(source).toContain('application/ld+json');
     expect(source).toContain("'@type': 'SoftwareApplication'");
+    // 监控与验证 token 通过环境变量注入，未配置时不渲染
+    expect(source).toContain('PUBLIC_GOOGLE_SITE_VERIFICATION');
+    expect(source).toContain('PUBLIC_CF_ANALYTICS_TOKEN');
+    expect(source).toContain('google-site-verification');
+    expect(source).toContain('cloudflareinsights.com/beacon.min.js');
+  });
+
+  it('转换页输出 FAQPage 结构化数据覆盖全部 FAQ', () => {
+    const source = readFileSync('src/pages/convert/[slug].astro', 'utf8');
+    expect(source).toContain("'@type': 'FAQPage'");
+    expect(source).toContain("'@type': 'Question'");
+    expect(source).toContain('converter.faq.map');
   });
 
   it('转换路由由 converters.json 通过 getStaticPaths 生成', () => {
