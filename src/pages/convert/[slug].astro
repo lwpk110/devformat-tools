@@ -35,11 +35,21 @@ const faqStructuredData = {
     acceptedAnswer: { '@type': 'Answer', text: item.a },
   })),
 };
+// BreadcrumbList 结构化数据：与可视化面包屑 nav 对应，提升富搜索结果
+const breadcrumbStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'DevFormat.tools', item: new URL(baseUrl, Astro.site ?? 'https://devformat.tools').toString() },
+    { '@type': 'ListItem', position: 2, name: displayName },
+  ],
+};
 ---
 
 <Layout title={converter.title} description={converter.description} canonical={`/convert/${converter.slug}/`}>
   <article class="mx-auto max-w-6xl px-5 pb-8 pt-10 sm:px-8 sm:pt-14">
     <script is:inline type="application/ld+json" set:html={JSON.stringify(faqStructuredData)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbStructuredData)} />
     <nav aria-label="Breadcrumb" class="mb-8 text-sm text-stone-500">
       <a href={baseUrl} class="underline-offset-4 hover:text-teal-800 hover:underline">All tools</a>
       <span aria-hidden="true" class="mx-2 text-stone-300">/</span>

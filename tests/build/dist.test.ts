@@ -53,6 +53,8 @@ describe('静态构建产物', () => {
     // 转换页在 SoftwareApplication 之外另输出 FAQPage 结构化数据
     expect(html).toContain('"@type":"FAQPage"');
     expect(html).toContain('"@type":"Question"');
+    // 转换页输出 BreadcrumbList 结构化数据
+    expect(html).toContain('"@type":"BreadcrumbList"');
 
     const jsonLd = extractJsonLd(html);
     expect(jsonLd).toMatchObject({
