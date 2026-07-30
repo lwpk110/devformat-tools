@@ -66,6 +66,8 @@ Cloudflare Pages 与 Vercel 均使用：
 - Node.js：20
 - 环境变量：无
 
+GitHub Pages 自动部署（`.github/workflows/deploy-github-pages.yml`）：push 到 `main` 时由 GitHub Actions 构建并发布。项目站点位于子路径，构建时注入 `SITE_URL=https://lwpk110.github.io` 与 `BASE_PATH=/devformat-tools`，访问地址为 `https://lwpk110.github.io/devformat-tools/`。使用前需在仓库 Settings → Pages 将 Source 设为 GitHub Actions。
+
 部署预览后，使用 `lighthouserc.json` 执行真实 LCP 门禁；配置要求移动端 LCP <= 1200ms。
 
 ```bash

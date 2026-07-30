@@ -10,7 +10,9 @@ interface Props {
 }
 
 const { title, description, canonical } = Astro.props;
-const canonicalUrl = new URL(canonical, Astro.site ?? 'https://devformat.tools').toString();
+const baseUrl = import.meta.env.BASE_URL;
+// canonical 形如 / 或 /convert/slug/，与 BASE_URL 拼接得到含子路径的完整站内路径
+const canonicalUrl = new URL(`${baseUrl}${canonical.replace(/^\//, '')}`, Astro.site ?? 'https://devformat.tools').toString();
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
@@ -36,7 +38,7 @@ const structuredData = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${baseUrl}favicon.svg`} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />

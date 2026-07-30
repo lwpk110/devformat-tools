@@ -1,15 +1,16 @@
 ---
 const pathname = Astro.url.pathname;
+const baseUrl = import.meta.env.BASE_URL;
 ---
 
 <header class="border-b border-stone-200 bg-[#f8f7f3]/95">
   <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
-    <a href="/" class="group inline-flex items-center gap-2.5 font-semibold tracking-[-0.02em] text-stone-950">
+    <a href={baseUrl} class="group inline-flex items-center gap-2.5 font-semibold tracking-[-0.02em] text-stone-950">
       <span class="grid size-8 place-items-center rounded-lg bg-teal-700 font-mono text-[10px] font-bold text-white transition-transform group-hover:-rotate-3">D/F</span>
       <span>DevFormat.tools</span>
     </a>
     <nav aria-label="Primary navigation">
-      <a href="/#all-tools" aria-current={pathname === '/' ? 'page' : undefined} class="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition hover:bg-stone-100 hover:text-stone-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-700">All tools</a>
+      <a href={`${baseUrl}#all-tools`} aria-current={pathname === baseUrl ? 'page' : undefined} class="rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition hover:bg-stone-100 hover:text-stone-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-700">All tools</a>
     </nav>
   </div>
 </header>

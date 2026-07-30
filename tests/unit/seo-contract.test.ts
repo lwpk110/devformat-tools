@@ -40,7 +40,7 @@ describe('Astro SEO 源契约', () => {
     expect(source.indexOf('All tools')).toBeGreaterThan(source.indexOf('Popular conversions'));
     expect(source).toContain('featuredRank');
     expect(source).toContain('allCategories');
-    expect(source).toContain('/convert/${converter.slug}/');
+    expect(source).toContain('convert/${converter.slug}/');
   });
 
   it('旧单向 YAML URL 只配置永久重定向', () => {

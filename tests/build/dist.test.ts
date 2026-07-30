@@ -8,6 +8,11 @@ import converters from '../../src/data/converters.json';
 
 const dist = join(process.cwd(), 'dist');
 
+// 与 astro.config 的 SITE_URL/BASE_PATH 保持一致，默认面向 Cloudflare 根路径部署
+const SITE = process.env.SITE_URL ?? 'https://devformat.tools';
+const rawBase = process.env.BASE_PATH ?? '/';
+const baseUrl = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+
 function read(relativePath: string): string {
   return readFileSync(join(dist, relativePath), 'utf8');
 }
@@ -31,7 +36,7 @@ describe('静态构建产物', () => {
   it.each(converters)('$slug 包含 canonical、OpenGraph、JSON-LD、FAQ 和静态正文', (converter) => {
     const html = read(`convert/${converter.slug}/index.html`);
     const normalizedHtml = html.replaceAll('&#38;', '&').replaceAll('&amp;', '&');
-    const canonical = `https://devformat.tools/convert/${converter.slug}/`;
+    const canonical = `${SITE}${baseUrl}convert/${converter.slug}/`;
 
     expect(html).toContain(`<link rel="canonical" href="${canonical}">`);
     expect(normalizedHtml).toContain(`<meta property="og:title" content="${converter.title}">`);
@@ -60,7 +65,7 @@ describe('静态构建产物', () => {
     const html = read('index.html');
     expect(html.indexOf('Popular conversions')).toBeLessThan(html.indexOf('>All tools</h2>'));
     for (const converter of converters) {
-      expect(html).toContain(`href="/convert/${converter.slug}/"`);
+      expect(html).toContain(`href="${baseUrl}convert/${converter.slug}/"`);
       expect(html).toContain(converter.directions[0].to);
     }
   });
@@ -72,16 +77,16 @@ describe('静态构建产物', () => {
 
   it('robots.txt 指向 sitemap index', () => {
     expect(read('robots.txt')).toBe(
-      'User-agent: *\nAllow: /\nSitemap: https://devformat.tools/sitemap-index.xml\n',
+      `User-agent: *\nAllow: /\nSitemap: ${SITE}${baseUrl}sitemap-index.xml\n`,
     );
   });
 
   it('sitemap index 与 sitemap-0.xml 存在并覆盖全部 slug', () => {
-    expect(read('sitemap-index.xml')).toContain('https://devformat.tools/sitemap-0.xml');
+    expect(read('sitemap-index.xml')).toContain(`${SITE}${baseUrl}sitemap-0.xml`);
     const sitemap = read('sitemap-0.xml');
-    expect(sitemap).toContain('<loc>https://devformat.tools/</loc>');
+    expect(sitemap).toContain(`<loc>${SITE}${baseUrl}</loc>`);
     for (const converter of converters) {
-      expect(sitemap).toContain(`<loc>https://devformat.tools/convert/${converter.slug}/</loc>`);
+      expect(sitemap).toContain(`<loc>${SITE}${baseUrl}convert/${converter.slug}/</loc>`);
     }
     expect(sitemap).not.toContain('/convert/json-to-yaml/');
   });
