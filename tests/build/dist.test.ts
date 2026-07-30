@@ -53,6 +53,8 @@ describe('静态构建产物', () => {
     // 转换页在 SoftwareApplication 之外另输出 FAQPage 结构化数据
     expect(html).toContain('"@type":"FAQPage"');
     expect(html).toContain('"@type":"Question"');
+    // 转换页输出 BreadcrumbList 结构化数据
+    expect(html).toContain('"@type":"BreadcrumbList"');
 
     const jsonLd = extractJsonLd(html);
     expect(jsonLd).toMatchObject({
@@ -79,6 +81,10 @@ describe('静态构建产物', () => {
     // token 作为公开默认值内置，无论是否配置环境变量均稳定渲染
     expect(html).toContain('cloudflareinsights.com/beacon.min.js');
     expect(html).toContain('google-site-verification');
+    // 所有页面输出社交分享卡片 og:image 与 summary_large_image
+    expect(html).toContain('property="og:image"');
+    expect(html).toContain('name="twitter:image"');
+    expect(html).toContain('summary_large_image');
   });
 
   it('旧方向 URL 不生成 HTML，只保留永久重定向配置', () => {
