@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+
 import { describe, expect, it } from 'vitest';
 
 import converters from '../../src/data/converters.json';
@@ -49,5 +51,13 @@ describe('converter 数据契约', () => {
     expect(converters.slice(0, 5).map(({ featuredRank }) => featuredRank)).toEqual([1, 2, 3, 4, 5]);
     expect(converters.slice(0, 5).every(({ directions }) => directions.length === 2)).toBe(true);
     expect(converters.slice(5).every(({ directions }) => directions.length === 1)).toBe(true);
+  });
+
+  it('公开文案使用固定方向按钮而不是已移除的 Swap', () => {
+    const faqCopy = converters.flatMap(({ faq }) => faq.flatMap(({ q, a }) => [q, a]));
+    const homeSource = readFileSync('src/pages/index.astro', 'utf8');
+
+    expect(faqCopy.join('\n')).not.toMatch(/\bSwap\b/i);
+    expect(homeSource).not.toMatch(/\bSwap\b/i);
   });
 });

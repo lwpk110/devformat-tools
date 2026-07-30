@@ -26,7 +26,7 @@
       }
     ],
     "faq": [
-      { "q": "Can I convert CSV to JSON on the same page?", "a": "Yes. Use Swap to switch between JSON to CSV and CSV to JSON without opening another page." },
+      { "q": "Can I convert CSV to JSON on the same page?", "a": "Yes. Enter content in either fixed-format editor and use the direction buttons between them without opening another page." },
       { "q": "Does the converter support commas and newlines?", "a": "Yes. Properly quoted CSV fields can contain commas, double quotes and line breaks." }
     ]
   },
@@ -56,7 +56,7 @@
       { "id": "yaml-to-json", "from": "YAML", "to": "JSON", "sampleInput": "service: api\nreplicas: 3\nenabled: true", "sampleOutput": "{\n  \"service\": \"api\",\n  \"replicas\": 3,\n  \"enabled\": true\n}", "downloadExtension": "json", "summary": "Parse YAML configuration into formatted JSON." }
     ],
     "faq": [
-      { "q": "Can I convert YAML back to JSON here?", "a": "Yes. Swap changes the direction on this same page and keeps both tasks under one canonical URL." },
+      { "q": "Can I convert YAML back to JSON here?", "a": "Yes. Enter YAML in its editor and use the YAML-to-JSON direction button on this same canonical page." },
       { "q": "Does this JSON YAML converter upload my configuration?", "a": "No. Parsing and serialization run entirely inside your browser." }
     ]
   },
