@@ -1,8 +1,73 @@
 ---
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import ContentSection from '../components/ContentSection.astro';
+import FAQSection from '../components/FAQSection.astro';
 import { SessionConverter } from '../components/SessionConverter';
 import Layout from '../layouts/Layout.astro';
+import type { ContentSection as ContentSectionData, FAQItem } from '../types/converter';
+
+const baseUrl = import.meta.env.BASE_URL;
+
+const contentSections: ContentSectionData[] = [
+  {
+    heading: 'How the session converter works',
+    body: [
+      'Paste a ChatGPT session JSON object — typically containing an accessToken, refreshToken, idToken and a user object — and the converter extracts credentials by decoding the JWT, normalizing fields from many naming conventions, and mapping them into the exact structure your target platform expects.',
+      'The tool detects whether a session came from a ChatGPT web login or a Codex OAuth flow, infers the account ID, plan type and expiry from the access token payload, and generates a synthetic id_token when one is missing so downstream consumers keep working.',
+    ],
+  },
+  {
+    heading: 'Supported output formats',
+    body: [
+      'sub2api produces an accounts document with platform metadata and nested credentials. CPA emits a flat, per-account codex token record. Cockpit outputs account_id-keyed credentials with last_refresh tracking.',
+      '9router maps to a codex provider record with providerSpecificData. AxonHub generates auth_mode chatgpt token bundles, inserting a placeholder refresh_token when one is absent. Codex-Manager outputs sort, priority and meta blocks with token hints.',
+    ],
+  },
+  {
+    heading: 'Batch conversion and ZIP download',
+    body: [
+      'When you paste an array of sessions or upload multiple JSON files, the converter collects every session-like object it finds and converts them all at once. For CPA output with more than one account, the Download button produces a ZIP archive with one JSON file per account.',
+      'This makes bulk provisioning and migration straightforward — export your accounts, convert, and drop the result straight into your target tool.',
+    ],
+  },
+  {
+    heading: 'Privacy and security',
+    body: [
+      'Everything runs in your browser memory. Session JSON, access tokens and refresh tokens never leave your device — there is no server-side processing, no logging, and no persistence. Close the tab and the data is gone.',
+      'Because the tool only reads what you paste, it is safe to use with real credentials. Still, treat access tokens as secrets: do not share converted output publicly, and rotate any token you suspect was exposed.',
+    ],
+  },
+];
+
+const faqItems: FAQItem[] = [
+  { q: 'Is my session data uploaded anywhere?', a: 'No. All parsing and conversion happens entirely in your browser. Nothing is sent to a server, stored, or logged.' },
+  { q: 'What input does it accept?', a: 'A JSON object or array containing a ChatGPT session. The converter looks for accessToken under many common keys (accessToken, access_token, tokens.accessToken, credentials.access_token) and accepts camelCase or snake_case fields.' },
+  { q: 'What if my session has no idToken?', a: 'The converter generates a synthetic id_token from the account ID, plan type and expiry found in the access token JWT, so downstream tools that expect an id_token keep working.' },
+  { q: 'Can I convert multiple sessions at once?', a: 'Yes. Paste an array or upload several files. Every session-like object is collected and converted, and CPA output with multiple accounts can be downloaded as a ZIP archive.' },
+  { q: 'What is CPA expired +24h?', a: 'It forces the expired field to now plus 24 hours, which is useful when the target system rejects already-expired tokens during import.' },
+  { q: 'What does "remove id_token" do?', a: 'It strips id_token, idToken and id_token_synthetic fields from the entire output document, for tools that do not need or should not receive an id_token.' },
+  { q: 'How are priorities calculated?', a: 'Each account gets a priority based on the current date relative to a fixed epoch, so newer imports sort predictably without manual tuning.' },
+];
+
+// 与其他转换页一致的结构化数据
+const faqStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqItems.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+const breadcrumbStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'DevFormat.tools', item: new URL(baseUrl, Astro.site ?? 'https://devformat-tools.pages.dev').toString() },
+    { '@type': 'ListItem', position: 2, name: 'ChatGPT Session Converter' },
+  ],
+};
 ---
 
 <Layout
@@ -11,6 +76,8 @@ import Layout from '../layouts/Layout.astro';
   canonical="/session-converter/"
 >
   <article class="mx-auto max-w-6xl px-5 pb-8 pt-10 sm:px-8 sm:pt-14">
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(faqStructuredData)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbStructuredData)} />
     <nav aria-label="Breadcrumb" class="mb-8 text-sm text-stone-500">
       <a href="/" class="underline-offset-4 hover:text-teal-800 hover:underline">All tools</a>
       <span aria-hidden="true" class="mx-2 text-stone-300">/</span>
@@ -34,5 +101,9 @@ import Layout from '../layouts/Layout.astro';
     <div class="rounded-2xl border border-stone-200 bg-white p-5 shadow-[0_18px_60px_rgba(28,25,23,0.07)] sm:p-8">
       <SessionConverter client:idle />
     </div>
+
+    <ContentSection sections={contentSections} />
+
+    <FAQSection items={faqItems} />
   </article>
 </Layout>
