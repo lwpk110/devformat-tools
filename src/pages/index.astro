@@ -92,4 +92,19 @@ function toolName(converter: ConverterData): string {
       </div>
     </div>
   </section>
+
+  <section id="session-tools" class="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
+    <div class="mb-10">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-800">Power tools</p>
+      <h2 class="mt-2 text-3xl font-semibold tracking-[-0.035em] text-stone-950 sm:text-4xl">Session & account tools</h2>
+    </div>
+    <a href={`${baseUrl}session-converter/`} class="group flex flex-col gap-3 rounded-2xl border border-stone-300 bg-white p-6 transition hover:border-teal-700 hover:bg-teal-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 sm:p-7">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold uppercase tracking-[0.16em] text-teal-800">Session Tools</span>
+        <span aria-hidden="true" class="text-xl text-teal-800 transition-transform group-hover:translate-x-1">→</span>
+      </div>
+      <h3 class="text-2xl font-semibold tracking-[-0.025em] text-stone-950">ChatGPT Session Converter</h3>
+      <p class="max-w-2xl text-sm leading-6 text-stone-500">Convert a ChatGPT session JSON into sub2api, CPA, Cockpit, 9router, AxonHub or Codex-Manager format. JWT parsing, synthetic id_token, batch upload and ZIP download — all in your browser.</p>
+    </a>
+  </section>
 </Layout>
