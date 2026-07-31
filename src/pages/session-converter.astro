@@ -1,0 +1,38 @@
+---
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SessionConverter } from '../components/SessionConverter';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="ChatGPT Session Converter - sub2api / CPA / Cockpit / AxonHub"
+  description="Convert ChatGPT session JSON to sub2api, CPA, Cockpit, 9router, AxonHub and Codex-Manager formats. Runs entirely in your browser — no uploads, no signup."
+  canonical="/session-converter/"
+>
+  <article class="mx-auto max-w-6xl px-5 pb-8 pt-10 sm:px-8 sm:pt-14">
+    <nav aria-label="Breadcrumb" class="mb-8 text-sm text-stone-500">
+      <a href="/" class="underline-offset-4 hover:text-teal-800 hover:underline">All tools</a>
+      <span aria-hidden="true" class="mx-2 text-stone-300">/</span>
+      <span>ChatGPT Session Converter</span>
+    </nav>
+
+    <header class="mb-8 max-w-4xl">
+      <div class="mb-4 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-teal-800">
+        <span>Session Tools</span>
+        <span aria-hidden="true" class="size-1 rounded-full bg-stone-300"></span>
+        <span>Runs locally</span>
+      </div>
+      <h1 class="text-4xl font-semibold leading-[1.05] tracking-[-0.05em] text-stone-950 sm:text-6xl">
+        ChatGPT Session Converter
+      </h1>
+      <p class="mt-5 max-w-3xl text-lg leading-8 text-stone-600">
+        Paste a ChatGPT session JSON and convert it to sub2api, CPA, Cockpit, 9router, AxonHub or Codex-Manager format. Supports JWT parsing, synthetic id_token generation, batch file upload and ZIP download. Everything runs in your browser — nothing is uploaded.
+      </p>
+    </header>
+
+    <div class="rounded-2xl border border-stone-200 bg-white p-5 shadow-[0_18px_60px_rgba(28,25,23,0.07)] sm:p-8">
+      <SessionConverter client:idle />
+    </div>
+  </article>
+</Layout>
