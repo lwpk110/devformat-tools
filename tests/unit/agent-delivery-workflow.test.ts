@@ -36,3 +36,34 @@ describe('agent delivery 状态工作流', () => {
     expect(workflow.permissions['pull-requests']).toBe('write')
   })
 })
+
+describe('Copilot review 恢复工作流', () => {
+  test('定时扫描托管 PR 并保留手动触发入口', () => {
+    const workflow = parse(read('.github/workflows/agent-delivery-recovery.yml'))
+
+    expect(workflow.on.schedule).toEqual([{ cron: '*/15 * * * *' }])
+    expect(workflow.on.workflow_dispatch).toEqual(null)
+  })
+
+  test('以真实 reviewer 登记为门禁且不具备合并权限', () => {
+    const source = read('.github/workflows/agent-delivery-recovery.yml')
+    const workflow = parse(source)
+
+    expect(workflow.permissions).toEqual({
+      contents: 'read',
+      'pull-requests': 'write',
+      issues: 'write',
+      checks: 'read',
+    })
+    expect(source).toContain('requested_reviewers')
+    expect(source).toContain('status:blocked')
+    expect(source).toContain('@copilot review')
+    expect(source).toContain('15 * 60 * 1000')
+    expect(source).toContain('60 * 60 * 1000')
+    expect(source).toContain('6 * 60 * 60 * 1000')
+    expect(source).toContain('<!-- agent-delivery-state:')
+    expect(source).not.toContain('pulls.merge')
+    expect(source).not.toContain('contents: write')
+    expect(source).not.toContain("state: 'closed'")
+  })
+})

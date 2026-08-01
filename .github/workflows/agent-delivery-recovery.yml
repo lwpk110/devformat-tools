@@ -1,0 +1,224 @@
+name: Agent Delivery Recovery
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  checks: read
+
+concurrency:
+  group: agent-delivery-recovery
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recover stalled Copilot reviews
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo
+            const waitBeforeRetry = 15 * 60 * 1000
+            const waitBeforeBlock = 60 * 60 * 1000
+            const waitBeforeBlockedRetry = 6 * 60 * 60 * 1000
+            const statusTitle = '## Agent Delivery Status'
+            const statePattern = /<!-- agent-delivery-state: (\{.*\}) -->/
+            const now = Date.now()
+
+            const readState = (body) => {
+              const match = body?.match(statePattern)
+              if (!match) return {}
+              try {
+                return JSON.parse(match[1])
+              } catch {
+                return {}
+              }
+            }
+
+            const formatTime = (value) => value ? new Date(value).toISOString() : '无'
+            const renderStatus = (pr, state, details) => [
+              statusTitle,
+              '',
+              `- 触发事件：\`${context.eventName}\``,
+              `- Head SHA：\`${pr.head.sha}\``,
+              `- Copilot reviewer：${details.reviewerRegistered ? '已登记' : '未登记'}`,
+              `- Copilot review：${details.reviewState ?? '未完成'}`,
+              `- 状态：\`${state.state}\``,
+              `- 等待开始时间：${formatTime(state.waitingSince)}`,
+              `- Copilot 请求次数：${state.requestCount ?? 0}`,
+              `- 上次重试时间：${formatTime(state.lastRetryAt)}`,
+              `- 下次检查时间：${formatTime(state.nextCheckAt)}`,
+              `- 下一步：${details.nextStep}`,
+              '',
+              `<!-- agent-delivery-state: ${JSON.stringify(state)} -->`,
+            ].join('\n')
+
+            const pullRequests = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100,
+            })
+
+            for (const listedPr of pullRequests) {
+              try {
+                const { data: pr } = await github.rest.pulls.get({
+                  owner,
+                  repo,
+                  pull_number: listedPr.number,
+                })
+                const managed = pr.labels.some((label) => label.name === 'agent-managed')
+                if (!managed || pr.draft) continue
+
+                const [{ data: reviews }, comments] = await Promise.all([
+                  github.rest.pulls.listReviews({ owner, repo, pull_number: pr.number, per_page: 100 }),
+                  github.paginate(github.rest.issues.listComments, {
+                    owner,
+                    repo,
+                    issue_number: pr.number,
+                    per_page: 100,
+                  }),
+                ])
+                const statusComment = comments.find((comment) => comment.body?.startsWith(statusTitle))
+                const previous = readState(statusComment?.body)
+                const copilotReview = reviews
+                  .filter((review) => /copilot/i.test(review.user?.login ?? ''))
+                  .at(-1)
+                const reviewerRegistered = pr.requested_reviewers.some(
+                  (reviewer) => /copilot/i.test(reviewer.login),
+                )
+                const hasBlockedLabel = pr.labels.some((label) => label.name === 'status:blocked')
+                const updateStatus = async (state, details) => {
+                  const body = renderStatus(pr, state, details)
+                  if (statusComment) {
+                    await github.rest.issues.updateComment({ owner, repo, comment_id: statusComment.id, body })
+                  } else {
+                    await github.rest.issues.createComment({ owner, repo, issue_number: pr.number, body })
+                  }
+                }
+                const addBlocked = async () => {
+                  if (!hasBlockedLabel) {
+                    await github.rest.issues.addLabels({
+                      owner,
+                      repo,
+                      issue_number: pr.number,
+                      labels: ['status:blocked'],
+                    })
+                  }
+                }
+                const removeBlocked = async () => {
+                  if (hasBlockedLabel) {
+                    await github.rest.issues.removeLabel({
+                      owner,
+                      repo,
+                      issue_number: pr.number,
+                      name: 'status:blocked',
+                    })
+                  }
+                }
+
+                if (copilotReview) {
+                  const state = {
+                    state: 'waiting-for-feedback',
+                    waitingSince: previous.waitingSince ?? now,
+                    requestCount: previous.requestCount ?? 0,
+                    lastRetryAt: previous.lastRetryAt ?? null,
+                    nextCheckAt: null,
+                  }
+                  await removeBlocked()
+                  await updateStatus(state, {
+                    reviewerRegistered,
+                    reviewState: copilotReview.state,
+                    nextStep: '通过 GitHub MCP 读取并处理有效 Copilot feedback。',
+                  })
+                  continue
+                }
+
+                if (!reviewerRegistered) {
+                  const state = {
+                    state: 'blocked-review-request-not-accepted',
+                    waitingSince: previous.waitingSince ?? now,
+                    requestCount: previous.requestCount ?? 0,
+                    lastRetryAt: previous.lastRetryAt ?? null,
+                    nextCheckAt: null,
+                  }
+                  await addBlocked()
+                  await updateStatus(state, {
+                    reviewerRegistered,
+                    nextStep: 'Copilot review request 未被 GitHub 接受；请在 GitHub Copilot Code Review 设置中启用该仓库后重新请求。',
+                  })
+                  continue
+                }
+
+                const waitingSince = previous.waitingSince ?? now
+                const elapsed = now - waitingSince
+                const requestCount = previous.requestCount ?? 0
+                const lastRetryAt = previous.lastRetryAt ?? null
+                let state = {
+                  state: 'waiting-for-review',
+                  waitingSince,
+                  requestCount,
+                  lastRetryAt,
+                  nextCheckAt: waitingSince + waitBeforeRetry,
+                }
+                let nextStep = '等待正式 Copilot review。'
+                let requestReview = false
+
+                if (elapsed >= waitBeforeBlock) {
+                  const blockedFor = lastRetryAt ? now - lastRetryAt : 0
+                  if (previous.state === 'blocked-no-response' && blockedFor >= waitBeforeBlockedRetry) {
+                    state = {
+                      ...state,
+                      state: 'waiting-for-review',
+                      requestCount: requestCount + 1,
+                      lastRetryAt: now,
+                      nextCheckAt: now + waitBeforeBlockedRetry,
+                    }
+                    nextStep = '已在阻塞六小时后再次请求 Copilot review。'
+                    requestReview = true
+                  } else if (previous.state !== 'blocked-no-response') {
+                    state = {
+                      ...state,
+                      state: 'blocked-no-response',
+                      nextCheckAt: now + waitBeforeBlockedRetry,
+                    }
+                    nextStep = 'Copilot 超过 60 分钟未响应；六小时后自动重试。'
+                    await addBlocked()
+                  } else {
+                    state = {
+                      ...state,
+                      state: 'blocked-no-response',
+                      nextCheckAt: (lastRetryAt ?? now) + waitBeforeBlockedRetry,
+                    }
+                    nextStep = '等待六小时后的 Copilot review 重试。'
+                  }
+                } else if (elapsed >= waitBeforeRetry && requestCount === 0) {
+                  state = {
+                    ...state,
+                    requestCount: 1,
+                    lastRetryAt: now,
+                    nextCheckAt: waitingSince + waitBeforeBlock,
+                  }
+                  nextStep = '已请求 Copilot review，等待正式 review。'
+                  requestReview = true
+                }
+
+                await updateStatus(state, { reviewerRegistered, nextStep })
+                if (requestReview) {
+                  await github.rest.issues.createComment({
+                    owner,
+                    repo,
+                    issue_number: pr.number,
+                    body: '@copilot review',
+                  })
+                }
+              } catch (error) {
+                core.warning(`PR #${listedPr.number} 恢复失败：${error instanceof Error ? error.name : 'UnknownError'}`)
+              }
+            }
