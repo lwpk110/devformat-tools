@@ -4,6 +4,7 @@ import { jsonToRust } from './jsonToRust';
 import { jsonToTypeScript } from './jsonToTs';
 import { jsonToYaml } from './jsonToYaml';
 import { dateTimeToTimestamp, timestampToDateTime } from './timestamp';
+import { decodeUrl, encodeUrl } from './url';
 import { ConversionError } from './utils';
 import { jsonToXml, xmlToJson } from './xml';
 import { yamlToJson } from './yaml';
@@ -15,6 +16,8 @@ export const supportedConverters: Readonly<Record<string, Converter>> = {
   'csv-to-json': csvToJson,
   'base64-encode': encodeBase64,
   'base64-decode': decodeBase64,
+  'url-encode': encodeUrl,
+  'url-decode': decodeUrl,
   'json-to-yaml': jsonToYaml,
   'yaml-to-json': yamlToJson,
   'json-to-xml': jsonToXml,
