@@ -34,6 +34,7 @@ describe('agent delivery 状态工作流', () => {
     expect(source).not.toContain('pulls.merge')
     expect(source).not.toContain('contents: write')
     expect(source).toContain("check.conclusion !== 'success'")
-    expect(workflow.permissions['pull-requests']).toBe('read')
+    expect(source).toContain('GitHub 将 PR 状态评论视为 pull request 写操作。')
+    expect(workflow.permissions['pull-requests']).toBe('write')
   })
 })

@@ -10,7 +10,8 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
+  # GitHub 将 PR 状态评论视为 pull request 写操作。
+  pull-requests: write
   issues: write
   checks: read
 
