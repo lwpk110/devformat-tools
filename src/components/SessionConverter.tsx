@@ -145,13 +145,13 @@ export function SessionConverter() {
     }
     const docs: unknown[] = [];
     for (const file of accepted) {
+      const text = await file.text();
       try {
-        const text = await file.text();
         const parsed = JSON.parse(text);
         if (Array.isArray(parsed)) docs.push(...parsed);
         else docs.push(parsed);
       } catch {
-        docs.push(await file.text());
+        docs.push(text);
       }
     }
     const combined = JSON.stringify(docs.length === 1 ? docs[0] : docs);
@@ -283,7 +283,7 @@ export function SessionConverter() {
         {/* —— 输出面板 —— */}
         <section className="rounded-xl border border-stone-200 bg-white shadow-sm" aria-label="输出">
           <div className="flex items-center justify-between gap-2 border-b border-stone-100 px-4 py-3">
-            <h3 className="text-sm font-semibold text-stone-900" aria-label={`输出结果 · ${SESSION_FORMAT_LABELS[format]}`}>
+            <h3 className="text-sm font-semibold text-stone-900">
               输出结果 · {SESSION_FORMAT_LABELS[format]}
             </h3>
           </div>
