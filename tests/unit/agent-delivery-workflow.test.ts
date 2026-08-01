@@ -33,6 +33,7 @@ describe('agent delivery 状态工作流', () => {
     expect(source).toContain('actions/github-script@v7')
     expect(source).not.toContain('pulls.merge')
     expect(source).not.toContain('contents: write')
-    expect(workflow.permissions['pull-requests']).toBe('write')
+    expect(source).toContain("check.conclusion !== 'success'")
+    expect(workflow.permissions['pull-requests']).toBe('read')
   })
 })

@@ -10,7 +10,7 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
+  pull-requests: read
   issues: write
   checks: read
 
@@ -80,7 +80,9 @@ jobs:
               .filter((review) => /copilot/i.test(review.user?.login ?? ''))
               .at(-1)
             const relevantChecks = checks.check_runs.filter((check) => check.name !== 'summarize')
-            const failedChecks = relevantChecks.filter((check) => check.conclusion === 'failure')
+            const failedChecks = relevantChecks.filter(
+              (check) => check.status === 'completed' && check.conclusion !== 'success',
+            )
             const pendingChecks = relevantChecks.filter((check) => check.status !== 'completed')
             const checksState = failedChecks.length > 0
               ? `失败 ${failedChecks.map((check) => check.name).join('、')}`

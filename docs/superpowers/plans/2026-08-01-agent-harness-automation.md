@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 为 `agent-managed` PR 建立审计状态和 MCP Agent 交付规则，并以此修复、合并 PR #23，自动关闭 Issue #22。
+**Goal:** 为 `agent-managed` PR 建立审计状态和 MCP Agent 交付规则，支持 Issue #24 的可追溯审查、修复与合并闭环。
 
 **Architecture:** GitHub Actions 只汇总带 `agent-managed` 标签的 PR、review 和 check 事件，并在单一 PR comment 中更新状态。MCP Agent 读取 Copilot feedback、修复和验证代码、重新审查并 squash merge；`Closes #<issue>` 关闭关联 Issue。
 
