@@ -4,7 +4,7 @@ import { popularTools, toolCatalog, toolCategories } from '../../src/data/toolCa
 
 describe('统一工具目录', () => {
   it('收录全部标准转换器和 ChatGPT Session Converter', () => {
-    expect(toolCatalog).toHaveLength(10);
+    expect(toolCatalog).toHaveLength(11);
     expect(toolCatalog).toContainEqual(expect.objectContaining({
       id: 'chatgpt-session-converter',
       name: 'ChatGPT Session Converter',
@@ -14,6 +14,14 @@ describe('统一工具目录', () => {
       homepageRank: 1,
       kind: 'session',
     }));
+    expect(toolCatalog).toContainEqual(expect.objectContaining({
+      id: 'url-encode',
+      name: 'Text ↔ URL encoded',
+      href: '/convert/url-encode/',
+      category: 'Encoding',
+      kind: 'converter',
+    }));
+    expect(popularTools.map(({ id }) => id)).not.toContain('url-encode');
   });
 
   it('用显式字段稳定排序精选工具和分类', () => {

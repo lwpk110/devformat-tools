@@ -47,6 +47,27 @@ describe('高频双向转换', () => {
     expect(convert('base64-decode', encoded)).toBe(input);
   });
 
+  it('URL component 编码保留加号语义并支持 Unicode', () => {
+    const input = 'Hello World + / 你好🚀';
+    const encoded = 'Hello%20World%20%2B%20%2F%20%E4%BD%A0%E5%A5%BD%F0%9F%9A%80';
+
+    expect(convert('url-encode', input)).toBe(encoded);
+    expect(convert('url-decode', encoded)).toBe(input);
+    expect(convert('url-decode', 'a+b')).toBe('a+b');
+  });
+
+  it('URL 解码拒绝非法百分号转义', () => {
+    expect(() => convert('url-decode', 'value%ZZ')).toThrow(
+      new ConversionError('URL 编码格式无效'),
+    );
+  });
+
+  it('URL 编码拒绝非法 UTF-16 输入', () => {
+    expect(() => convert('url-encode', '\uD800')).toThrow(
+      new ConversionError('URL 编码格式无效'),
+    );
+  });
+
   it('YAML 与 JSON 支持 nested object 和 array', () => {
     const yaml = convert('json-to-yaml', '{"service":"api","ports":[80,443]}');
     expect(yaml).toContain('service: api');
