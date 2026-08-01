@@ -81,4 +81,26 @@ describe('SessionConverter 批处理工作台', () => {
 
     click.mockRestore();
   });
+
+  it('保留多段 JSON 文本以便逐行解析 session', async () => {
+    const { container } = render(<SessionConverter />);
+    const fileInput = container.querySelector('input[type="file"]');
+    const sessions = [
+      JSON.stringify(EXAMPLE_SESSION),
+      JSON.stringify({ ...EXAMPLE_SESSION, user: { ...EXAMPLE_SESSION.user, email: 'second@example.com' } }),
+    ].join('\n');
+    const file = { name: 'sessions.txt', text: async () => sessions } as File;
+
+    expect(fileInput).not.toBeNull();
+    fireEvent.change(fileInput!, { target: { files: [file] } });
+
+    expect(await screen.findByText('已转换 2 个账号')).toBeInTheDocument();
+  });
+
+  it('选中的格式 tab 使用 aria-selected', () => {
+    render(<SessionConverter />);
+
+    expect(screen.getByRole('tab', { name: 'sub2api' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: 'CPA' })).toHaveAttribute('aria-selected', 'false');
+  });
 });

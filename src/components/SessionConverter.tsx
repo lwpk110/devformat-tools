@@ -144,6 +144,7 @@ export function SessionConverter() {
       return;
     }
     const docs: unknown[] = [];
+    const rawTexts: string[] = [];
     for (const file of accepted) {
       const text = await file.text();
       try {
@@ -151,10 +152,12 @@ export function SessionConverter() {
         if (Array.isArray(parsed)) docs.push(...parsed);
         else docs.push(parsed);
       } catch {
-        docs.push(text);
+        rawTexts.push(text);
       }
     }
-    const combined = JSON.stringify(docs.length === 1 ? docs[0] : docs);
+    const combined = rawTexts.length
+      ? [...docs.map((doc) => JSON.stringify(doc)), ...rawTexts].join('\n')
+      : JSON.stringify(docs.length === 1 ? docs[0] : docs);
     setInput(combined);
     doConvert(combined, format, cpaExpirePlus24h, omitIdToken);
   };
@@ -222,7 +225,8 @@ export function SessionConverter() {
             key={fmt}
             type="button"
             role="tab"
-            aria-pressed={format === fmt}
+            aria-selected={format === fmt}
+            tabIndex={format === fmt ? 0 : -1}
             onClick={() => handleFormatChange(fmt)}
             className={`min-h-9 rounded-md px-2 py-1.5 text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-teal-700 ${
               format === fmt ? 'bg-teal-700 text-white shadow-sm' : 'text-stone-500 hover:text-stone-900'
