@@ -61,6 +61,8 @@ describe('仓库交付治理契约', () => {
     const guidance = read('AGENTS.md')
     expect(guidance).toContain('`agent-managed`')
     expect(guidance).toContain('GitHub MCP')
+    expect(guidance).toContain('.users[].login')
+    expect(guidance).toContain('/copilot/i')
     expect(guidance).toContain('有效 unresolved feedback')
     expect(guidance).toContain('验证 Issue 已关闭')
     expect(guidance.toLowerCase()).not.toContain('secret scanning')
