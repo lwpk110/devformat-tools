@@ -156,6 +156,10 @@ jobs:
                   continue
                 }
 
+                if (previous.state === 'blocked-review-request-not-accepted') {
+                  await removeBlocked()
+                }
+
                 const waitingSince = previous.waitingSince ?? now
                 const elapsed = now - waitingSince
                 const requestCount = previous.requestCount ?? 0
@@ -175,7 +179,7 @@ jobs:
                   if (previous.state === 'blocked-no-response' && blockedFor >= waitBeforeBlockedRetry) {
                     state = {
                       ...state,
-                      state: 'waiting-for-review',
+                      state: 'blocked-no-response',
                       requestCount: requestCount + 1,
                       lastRetryAt: now,
                       nextCheckAt: now + waitBeforeBlockedRetry,
