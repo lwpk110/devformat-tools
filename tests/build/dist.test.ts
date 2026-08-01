@@ -78,6 +78,10 @@ describe('静态构建产物', () => {
 
   it('首页无需 JavaScript 即包含全部工具链接', () => {
     const html = read('index.html');
+
+    expect(html).toContain('<title>Free Online Developer Converters - Private JSON, CSV, YAML &amp; More</title>');
+    expect(html).toContain('name="description" content="Free online developer converters for JSON, CSV, YAML, XML, Base64, timestamps and URL encoding. Fast, private browser tools with no uploads or signup."');
+    expect(html).toMatch(/<h1[^>]*>\s*Private developer format converters\.\s*<\/h1>/);
     expect(html.indexOf('Popular conversions')).toBeLessThan(html.indexOf('>All tools</h2>'));
     for (const converter of converters) {
       expect(html).toContain(`href="${baseUrl}convert/${converter.slug}/"`);
