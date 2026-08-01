@@ -40,8 +40,8 @@ jobs:
               pull_number: pullRequest.number,
             })
             const managed = pr.labels.some((label) => label.name === 'agent-managed')
-            if (!managed || pr.draft) {
-              core.info('PR 未由 agent 接管或仍为 Draft，跳过状态汇总。')
+            if (!managed) {
+              core.info('PR 未由 agent 接管，跳过状态汇总。')
               return
             }
 
@@ -86,15 +86,17 @@ jobs:
               : pendingChecks.length > 0
                 ? `进行中 ${pendingChecks.map((check) => check.name).join('、')}`
                 : '已完成'
-            const nextStep = failedChecks.length > 0
-              ? '修复失败的 check 并推送新的 commit。'
-              : pendingChecks.length > 0
-                ? '等待 GitHub checks 完成。'
-                : unresolvedCopilotThreads > 0
-                  ? '通过 GitHub MCP 读取并处理有效 Copilot feedback。'
-                  : copilotReview
-                    ? '确认可合并性后由 MCP Agent 执行 squash merge。'
-                    : '通过 GitHub MCP 请求正式 Copilot review。'
+            const nextStep = pr.draft
+              ? '等待 PR 转为 Ready for review。'
+              : failedChecks.length > 0
+                ? '修复失败的 check 并推送新的 commit。'
+                : pendingChecks.length > 0
+                  ? '等待 GitHub checks 完成。'
+                  : unresolvedCopilotThreads > 0
+                    ? '通过 GitHub MCP 读取并处理有效 Copilot feedback。'
+                    : copilotReview
+                      ? '确认可合并性后由 MCP Agent 执行 squash merge。'
+                      : '通过 GitHub MCP 请求正式 Copilot review。'
             const body = [
               '## Agent Delivery Status',
               '',
