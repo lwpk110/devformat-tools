@@ -5,11 +5,12 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import converters from '../../src/data/converters.json';
+import { DEFAULT_SITE_URL } from '../../src/config/site';
 
 const dist = join(process.cwd(), 'dist');
 
 // 与 astro.config 的 SITE_URL/BASE_PATH 保持一致，默认面向 Cloudflare 根路径部署
-const SITE = process.env.SITE_URL ?? 'https://devformat-tools.pages.dev';
+const SITE = process.env.SITE_URL ?? DEFAULT_SITE_URL;
 const rawBase = process.env.BASE_PATH ?? '/';
 const baseUrl = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
 

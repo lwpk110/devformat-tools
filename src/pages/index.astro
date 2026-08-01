@@ -1,19 +1,9 @@
 ---
-import convertersData from '../data/converters.json';
+import { popularTools, toolCatalog, toolCategories } from '../data/toolCatalog';
 import Layout from '../layouts/Layout.astro';
-import type { ConverterData } from '../types/converter';
 
-const converters = convertersData as ConverterData[];
-const popular = converters
-  .filter((converter) => converter.featuredRank !== undefined)
-  .sort((left, right) => (left.featuredRank ?? 99) - (right.featuredRank ?? 99));
-const allCategories = [...new Set(converters.map(({ category }) => category))];
 const baseUrl = import.meta.env.BASE_URL;
-
-function toolName(converter: ConverterData): string {
-  const first = converter.directions[0];
-  return converter.directions.length > 1 ? `${first.from} ↔ ${first.to}` : `${first.from} → ${first.to}`;
-}
+const toolCount = toolCatalog.length;
 ---
 
 <Layout
@@ -32,7 +22,7 @@ function toolName(converter: ConverterData): string {
       </p>
       <div class="mt-9 flex flex-wrap gap-x-6 gap-y-2 text-sm text-stone-600" aria-label="Service guarantees">
         <span><strong class="font-semibold text-stone-800">0</strong> network uploads</span>
-        <span><strong class="font-semibold text-stone-800">9</strong> focused tools</span>
+        <span><strong class="font-semibold text-stone-800">{toolCount}</strong> focused tools</span>
         <span><strong class="font-semibold text-stone-800">100%</strong> browser local</span>
       </div>
     </div>
@@ -42,29 +32,27 @@ function toolName(converter: ConverterData): string {
     <div class="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-800">Start here</p>
-        <h2 class="mt-2 text-3xl font-semibold tracking-[-0.035em] text-stone-950 sm:text-4xl">Popular conversions</h2>
+        <h2 class="mt-2 text-3xl font-semibold tracking-[-0.035em] text-stone-950 sm:text-4xl">Popular tools</h2>
       </div>
-      <p class="max-w-md text-sm leading-6 text-stone-600">The most frequently needed conversions, ordered by search demand.</p>
+      <p class="max-w-md text-sm leading-6 text-stone-600">High-frequency tools for data conversion and account migration, ordered by practical demand.</p>
     </div>
 
     <div class="grid overflow-hidden rounded-2xl border border-stone-200 bg-stone-200 gap-px md:grid-cols-2">
-      {popular.map((converter) => (
-        <a href={`${baseUrl}convert/${converter.slug}/`} class="group min-h-48 bg-white p-6 transition hover:bg-teal-50 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-700 sm:p-7">
+      {popularTools.map((tool) => (
+        <a href={`${baseUrl}${tool.href.replace(/^\//, '')}`} class="group min-h-48 bg-white p-6 transition hover:bg-teal-50 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-700 sm:p-7">
           <div class="flex h-full flex-col justify-between gap-8">
             <div class="flex items-start justify-between gap-4">
-              <span class="text-xs font-semibold tabular-nums text-stone-600">0{converter.featuredRank}</span>
+              <span class="text-xs font-semibold tabular-nums text-stone-600">{String(tool.homepageRank).padStart(2, '0')}</span>
               <span aria-hidden="true" class="text-xl text-teal-800 transition-transform group-hover:translate-x-1">→</span>
             </div>
             <div>
-              <h3 class="text-2xl font-semibold tracking-[-0.025em] text-stone-950">{toolName(converter)}</h3>
-              <p class="mt-2 line-clamp-2 text-sm leading-6 text-stone-500">{converter.description}</p>
+              <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-teal-800">{tool.category}</p>
+              <h3 class="text-2xl font-semibold tracking-[-0.025em] text-stone-950">{tool.name}</h3>
+              <p class="mt-2 line-clamp-2 text-sm leading-6 text-stone-500">{tool.description}</p>
             </div>
           </div>
         </a>
       ))}
-      <div class="hidden bg-[#f8f7f3] p-7 md:block" aria-hidden="true">
-        <p class="max-w-xs text-sm leading-6 text-stone-400">One page per conversion pair. Paste into either format and choose a direction between the editors.</p>
-      </div>
     </div>
   </section>
 
@@ -75,14 +63,14 @@ function toolName(converter: ConverterData): string {
         <h2 class="mt-2 text-3xl font-semibold tracking-[-0.035em] text-stone-950 sm:text-4xl">All tools</h2>
       </div>
       <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-        {allCategories.map((category) => (
-          <section aria-labelledby={`category-${category.toLowerCase().replaceAll(' ', '-')}`}>
-            <h3 id={`category-${category.toLowerCase().replaceAll(' ', '-')}`} class="border-b border-stone-200 pb-3 text-sm font-semibold text-stone-950">{category}</h3>
+        {toolCategories.map((category) => (
+          <section aria-labelledby={`category-${category.name.toLowerCase().replaceAll(' ', '-')}`}>
+            <h3 id={`category-${category.name.toLowerCase().replaceAll(' ', '-')}`} class="border-b border-stone-200 pb-3 text-sm font-semibold text-stone-950">{category.name}</h3>
             <ul class="mt-3 grid gap-1">
-              {converters.filter((converter) => converter.category === category).map((converter) => (
+              {category.tools.map((tool) => (
                 <li>
-                  <a href={`${baseUrl}convert/${converter.slug}/`} class="block rounded-lg px-2 py-2.5 text-sm leading-5 text-stone-600 transition hover:bg-stone-100 hover:text-teal-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-700">
-                    {toolName(converter)}
+                  <a href={`${baseUrl}${tool.href.replace(/^\//, '')}`} class="block rounded-lg px-2 py-2.5 text-sm leading-5 text-stone-600 transition hover:bg-stone-100 hover:text-teal-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-700">
+                    {tool.name}
                   </a>
                 </li>
               ))}
@@ -91,20 +79,5 @@ function toolName(converter: ConverterData): string {
         ))}
       </div>
     </div>
-  </section>
-
-  <section id="session-tools" class="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
-    <div class="mb-10">
-      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-800">Power tools</p>
-      <h2 class="mt-2 text-3xl font-semibold tracking-[-0.035em] text-stone-950 sm:text-4xl">Session & account tools</h2>
-    </div>
-    <a href={`${baseUrl}session-converter/`} class="group flex flex-col gap-3 rounded-2xl border border-stone-300 bg-white p-6 transition hover:border-teal-700 hover:bg-teal-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 sm:p-7">
-      <div class="flex items-center justify-between">
-        <span class="text-xs font-semibold uppercase tracking-[0.16em] text-teal-800">Session Tools</span>
-        <span aria-hidden="true" class="text-xl text-teal-800 transition-transform group-hover:translate-x-1">→</span>
-      </div>
-      <h3 class="text-2xl font-semibold tracking-[-0.025em] text-stone-950">ChatGPT Session Converter</h3>
-      <p class="max-w-2xl text-sm leading-6 text-stone-500">Convert a ChatGPT session JSON into sub2api, CPA, Cockpit, 9router, AxonHub or Codex-Manager format. JWT parsing, synthetic id_token, batch upload and ZIP download — all in your browser.</p>
-    </a>
   </section>
 </Layout>

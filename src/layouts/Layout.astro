@@ -1,6 +1,7 @@
 ---
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import { DEFAULT_SITE_URL } from '../config/site';
 import '../styles/global.css';
 
 interface Props {
@@ -12,9 +13,10 @@ interface Props {
 const { title, description, canonical } = Astro.props;
 const baseUrl = import.meta.env.BASE_URL;
 // canonical 形如 / 或 /convert/slug/，与 BASE_URL 拼接得到含子路径的完整站内路径
-const canonicalUrl = new URL(`${baseUrl}${canonical.replace(/^\//, '')}`, Astro.site ?? 'https://devformat.tools').toString();
+const siteUrl = Astro.site ?? new URL(DEFAULT_SITE_URL);
+const canonicalUrl = new URL(`${baseUrl}${canonical.replace(/^\//, '')}`, siteUrl).toString();
 // 社交分享卡片图（1200x630），与站点品牌色一致
-const ogImageUrl = new URL(`${baseUrl}og-image.png`, Astro.site ?? 'https://devformat.tools').toString();
+const ogImageUrl = new URL(`${baseUrl}og-image.png`, siteUrl).toString();
 // 以下 token 为构建时注入的公开值，未配置时不渲染对应标签，避免空值或硬编码
 // 以下为公开设计值（须出现在页面 HTML 中才能工作），提供默认值后无论何种部署方式均稳定渲染；
 // 仍可用同名环境变量覆盖（如多环境区分）

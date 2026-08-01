@@ -3,6 +3,7 @@ import ConverterTool from '../../components/ConverterTool';
 import ContentSection from '../../components/ContentSection.astro';
 import FAQSection from '../../components/FAQSection.astro';
 import convertersData from '../../data/converters.json';
+import { DEFAULT_SITE_URL } from '../../config/site';
 import Layout from '../../layouts/Layout.astro';
 import type { ConverterData } from '../../types/converter';
 
@@ -41,7 +42,7 @@ const breadcrumbStructuredData = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'DevFormat.tools', item: new URL(baseUrl, Astro.site ?? 'https://devformat.tools').toString() },
+    { '@type': 'ListItem', position: 1, name: 'DevFormat.tools', item: new URL(baseUrl, Astro.site ?? new URL(DEFAULT_SITE_URL)).toString() },
     { '@type': 'ListItem', position: 2, name: displayName },
   ],
 };
