@@ -38,7 +38,7 @@
 
 - [ ] **Step 1: 写入失败测试。** 新建 workflow 测试并断言 `pull_request` 类型为 `opened`、`reopened`、`synchronize`、`labeled`、`unlabeled`、`ready_for_review`；`pull_request_review` 为 `submitted`；`check_suite` 为 `completed`。断言源码含 `contains(github.event.pull_request.labels.*.name, 'agent-managed')`、`actions/github-script@v7` 和状态标题，且不含 `pulls.merge`。
 - [ ] **Step 2: 验证 RED。** 运行 `npm test -- tests/unit/agent-delivery-workflow.test.ts`；预期 workflow 文件缺失。
-- [ ] **Step 3: 最小实现。** 新 workflow 监听三类事件，权限仅为 `contents: read`、`pull-requests: read`、`issues: write`、`checks: read`。脚本找到关联 PR；无 PR、Draft 或缺少标签时退出。对托管 PR 查询 check runs、Copilot review 和 review comments，生成触发事件、head SHA、checks、Copilot 状态、未解决反馈数和下一步；按固定标题更新旧 comment 或创建新 comment。禁止 `pulls.merge` 与 `contents: write`。
+- [ ] **Step 3: 最小实现。** 新 workflow 监听三类事件，权限为 `contents: read`、`pull-requests: write`、`issues: write`、`checks: read`；PR 状态评论在 GitHub 权限模型中需要 `pull-requests: write`。脚本仅处理唯一关联的 PR；无关联或缺少标签时退出，Draft PR 则写入等待转为 Ready 的状态。对托管 PR 查询 check runs、Copilot review 和 review comments，生成触发事件、head SHA、checks、Copilot 状态、未解决反馈数和下一步；仅更新 `github-actions[bot]` 创建的固定标题 comment，否则创建新 comment。禁止 `pulls.merge` 与 `contents: write`。
 - [ ] **Step 4: 验证 GREEN 并提交。** 运行 `npm test -- tests/unit/agent-delivery-workflow.test.ts tests/unit/repository-governance.test.ts`，预期通过；暂存 workflow 与测试，提交 `feat: 汇总 agent 托管 PR 的交付状态` 并 push。
 
 ### Task 3: 固化 MCP 交付规程
