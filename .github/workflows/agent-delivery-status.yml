@@ -18,8 +18,11 @@ permissions:
 jobs:
   summarize:
     if: >-
-      github.event_name != 'pull_request' ||
-      contains(github.event.pull_request.labels.*.name, 'agent-managed')
+      (github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'agent-managed')) ||
+      github.event_name == 'pull_request_review' ||
+      (github.event_name == 'check_suite' &&
+      github.event.check_suite.pull_requests[0].number != '')
     runs-on: ubuntu-latest
     steps:
       - name: Update agent delivery status
@@ -82,7 +85,8 @@ jobs:
               .at(-1)
             const relevantChecks = checks.check_runs.filter((check) => check.name !== 'summarize')
             const failedChecks = relevantChecks.filter(
-              (check) => check.status === 'completed' && check.conclusion !== 'success',
+              (check) => check.status === 'completed' &&
+                !['success', 'neutral', 'skipped'].includes(check.conclusion),
             )
             const pendingChecks = relevantChecks.filter((check) => check.status !== 'completed')
             const checksState = failedChecks.length > 0
@@ -98,6 +102,8 @@ jobs:
                   ? '等待 GitHub checks 完成。'
                   : unresolvedCopilotThreads > 0
                     ? '通过 GitHub MCP 读取并处理有效 Copilot feedback。'
+                    : copilotReview?.state === 'CHANGES_REQUESTED'
+                      ? '处理 Copilot 请求的修改后重新请求 review。'
                     : copilotReview
                       ? '确认可合并性后由 MCP Agent 执行 squash merge。'
                       : '通过 GitHub MCP 请求正式 Copilot review。'
@@ -111,7 +117,10 @@ jobs:
               `- 未解决 Copilot thread：${unresolvedCopilotThreads}`,
               `- 下一步：${nextStep}`,
             ].join('\n')
-            const previous = comments.find((comment) => comment.body?.startsWith('## Agent Delivery Status'))
+            const previous = comments.find(
+              (comment) => comment.user?.login === 'github-actions[bot]' &&
+                comment.body?.startsWith('## Agent Delivery Status'),
+            )
             if (previous) {
               await github.rest.issues.updateComment({ owner, repo, comment_id: previous.id, body })
             } else {
