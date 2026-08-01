@@ -57,6 +57,15 @@ describe('仓库交付治理契约', () => {
     expect(label).toContain('不会接管手工 PR')
   })
 
+  test('AGENTS 定义 MCP 驱动的 agent-managed 交付闭环', () => {
+    const guidance = read('AGENTS.md')
+    expect(guidance).toContain('`agent-managed`')
+    expect(guidance).toContain('GitHub MCP')
+    expect(guidance).toContain('有效 unresolved feedback')
+    expect(guidance).toContain('验证 Issue 已关闭')
+    expect(guidance.toLowerCase()).not.toContain('secret scanning')
+  })
+
   test('CI 在 main 的 PR 上使用 Node 20 执行完整门禁', () => {
     const workflow = parse(read('.github/workflows/ci.yml'))
     expect(workflow.on.pull_request.branches).toContain('main')
