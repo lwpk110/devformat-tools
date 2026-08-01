@@ -52,8 +52,8 @@
 
 **Interfaces:** PR #27 的 base 为 `feat/24-agent-harness-automation`，正文关联 `Closes #27`，并带 `agent-managed` 标签。
 
-- [ ] **Step 1: 全量本地验证。** 先运行 `npm run build`，再运行 `npm test` 和 `npm run check`；预期全部通过。若性能测试单次受共享负载影响，保留原阈值，记录输出并只重试一次。
-- [ ] **Step 2: 创建依赖 Draft PR。** 使用 GitHub API/CLI 创建 `fix/27-copilot-review-recovery` 到 `feat/24-agent-harness-automation` 的 Draft PR，标题为 `fix: 阻塞未登记的 Copilot reviewer 请求`，正文包含 `Closes #27`、真实 reviewer 验证行为、权限约束和本地验证；添加 `agent-managed`。
+- [x] **Step 1: 全量本地验证。** 已依次运行 `npm run build`、`npm test` 和 `npm run check`；构建成功，169 个测试通过，静态检查无诊断。
+- [x] **Step 2: 创建依赖 Draft PR。** 已创建 Draft PR #28：`fix/27-copilot-review-recovery` 到 `feat/24-agent-harness-automation`，正文包含 `Closes #27`、真实 reviewer 验证行为、权限约束和本地验证；已添加 `agent-managed`，远端 CI 与部署检查均通过。
 - [ ] **Step 3: 请求与验证 reviewer。** PR 转 Ready 后，通过 GitHub MCP 请求正式 Copilot review，随后读取 `requested_reviewers`。只有 reviewer 列表实际出现 Copilot 才进入等待审查；否则由恢复 workflow 标记 `status:blocked`，不得 merge。
 - [ ] **Step 4: 处理反馈与 CI。** GitHub checks 完成后，读取正式 review 与 unresolved thread；每条有效反馈回到 RED-GREEN 循环、原子提交并 push，然后重新请求并验证 Copilot reviewer。
 - [ ] **Step 5: 合并闭环。** 仅在 PR #25 已合并、PR #27 retarget 至 `main`、CI 成功、Copilot reviewer 已登记且 review 完成、无有效 unresolved feedback、无冲突时 squash merge；验证 Issue #27 自动关闭、远端分支删除和 Production 部署成功，再同步本地 `main`。
