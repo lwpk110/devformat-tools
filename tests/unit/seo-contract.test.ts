@@ -27,11 +27,13 @@ describe('Astro SEO 源契约', () => {
     expect(source).toContain('ogImageUrl');
     expect(source).toContain('property="og:image"');
     expect(source).toContain('summary_large_image');
-    // 监控与验证 token 通过环境变量注入，未配置时不渲染
+    // 监控与验证 token 有默认公开值，环境变量仅用于覆盖
     expect(source).toContain('PUBLIC_GOOGLE_SITE_VERIFICATION');
+    expect(source).toContain('liaWDIJgY2L_SkbRBjl-1h1cEvZJR3rb5oGIqE1RJ68');
     expect(source).toContain('PUBLIC_CF_ANALYTICS_TOKEN');
     expect(source).toContain('google-site-verification');
     expect(source).toContain('cloudflareinsights.com/beacon.min.js');
+    expect(source).not.toContain('未配置时不渲染对应标签');
     expect(source).toContain('DEFAULT_SITE_URL');
   });
 
