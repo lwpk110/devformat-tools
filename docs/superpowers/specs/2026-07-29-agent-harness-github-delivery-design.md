@@ -8,8 +8,8 @@
 
 ## 当前状态
 
-- GitHub MCP 已通过 `https://api.githubcopilot.com/mcp/` 启用，并使用环境变量传递 token。
-- MCP 已提供 Issue、PR、Copilot review、secret scanning、checks 查询和 merge 等写入能力。
+- GitHub MCP 使用官方本地 `github-mcp-server`，并在启动时从 GitHub CLI 登录态注入临时凭据。
+- MCP 已提供 Issue、PR、Copilot review、checks 查询和 merge 等写入能力。
 - OpenAI 官方 `github@openai-api-curated` plugin 尚未安装。
 - 用户级 `git-commit` skill 已安装，能够检查风险并创建原子提交，但默认不 push。
 - 仓库缺少根级 `AGENTS.md`、Issue forms、PR template 和 GitHub Actions CI。
@@ -23,7 +23,7 @@
 2. **全局编排层**：新增用户级 `github-delivery` skill，编排从 Issue 到自动合并的完整生命周期；现有 `git-commit` skill 专注原子提交并向编排器交回结果。
 3. **仓库约束层**：使用 `AGENTS.md`、`.github` 模板和 GitHub Actions 固化本项目规则、质量门禁和交付文档格式。
 
-GitHub MCP 是 Issue、PR、review、secret scanning 和 merge 的首选接口。`git` 负责本地分支与提交；`gh` 仅补足 MCP 不擅长的 Actions 日志、当前分支 PR 发现和仓库设置操作。
+GitHub MCP 是 Issue、PR、review 和 merge 的首选接口。只有 `agent-managed` 标签的 PR 由 harness 自动接管；`git` 负责本地分支与提交，`gh` 仅补足 MCP 不覆盖的 Actions 日志、当前分支 PR 发现和仓库设置操作。
 
 ## 组件职责
 
@@ -97,8 +97,8 @@ GitHub MCP 是 Issue、PR、review、secret scanning 和 merge 的首选接口�
 1. 更新 PR 正文和验证结果。
 2. 将 PR 从 Draft 转为 Ready for review。
 3. 使用 GitHub MCP `request_copilot_review` 请求 Copilot code review，不以普通 `@copilot` 评论替代审核请求。
-4. 读取 Copilot review、requested changes 和 unresolved threads。
-5. 对有效意见创建原子修复提交并 push；必要时重新请求 review。
+4. 读取 Copilot review、requested changes 和 unresolved threads，并在 `## Agent Delivery Status` 评论记录证据。
+5. 对每条有效意见创建带行为验证的原子修复提交并 push；必要时重新请求 review。
 
 ## CI 与自动合并门禁
 
@@ -121,9 +121,8 @@ workflow 使用 Node.js 20、依赖缓存、并发取消和 `contents: read` 最
 - Copilot review 已完成；
 - 没有未解决的有效 review 意见；
 - PR 与 `main` 无合并冲突；
-- secret scanning 未发现阻塞问题。
 
-合并提交标题沿用规范化 PR 标题。合并后删除远端功能分支，由 `Closes` 自动关闭 Issue，并同步本地 `main`。
+合并提交标题沿用规范化 PR 标题。合并后验证 `Closes` 已自动关闭 Issue、远端功能分支已删除和 Production 部署成功，再同步本地 `main`。
 
 ## 仓库设置
 
@@ -143,7 +142,6 @@ workflow 使用 Node.js 20、依赖缓存、并发取消和 `contents: read` 最
 - push 被拒绝时报告，不自动 force push 或改写历史。
 - 功能分支与 `main` 冲突时合并最新 `main` 到功能分支，不 rebase 已推送历史。
 - CI 疑似 flaky 时最多重试一次；再次失败后按真实故障处理。
-- MCP secret scanning 不可用时执行本地敏感信息检查，并明确保障降级。
 - 自动合并失败时保留 PR 和分支，不通过直推 `main` 补救。
 - 所有日志与汇报隐藏 token、密钥和敏感内容。
 
