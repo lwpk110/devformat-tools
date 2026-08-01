@@ -20,7 +20,7 @@ const ogImageUrl = new URL(`${baseUrl}og-image.png`, siteUrl).toString();
 // 以下 token 为构建时注入的公开值，未配置时不渲染对应标签，避免空值或硬编码
 // 以下为公开设计值（须出现在页面 HTML 中才能工作），提供默认值后无论何种部署方式均稳定渲染；
 // 仍可用同名环境变量覆盖（如多环境区分）
-const googleVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION ?? '1n1DNXbm0T_W-8nZLQMf-cwIhk60_JK0R5hMcnGVzaY';
+const googleVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION ?? 'liaWDIJgY2L_SkbRBjl-1h1cEvZJR3rb5oGIqE1RJ68';
 const cfAnalyticsToken = import.meta.env.PUBLIC_CF_ANALYTICS_TOKEN ?? 'e7deda90ebf2408aa4077fcf097c2325';
 const structuredData = {
   '@context': 'https://schema.org',
