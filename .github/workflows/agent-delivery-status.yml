@@ -79,8 +79,9 @@ jobs:
             const copilotReview = reviews
               .filter((review) => /copilot/i.test(review.user?.login ?? ''))
               .at(-1)
-            const failedChecks = checks.check_runs.filter((check) => check.conclusion === 'failure')
-            const pendingChecks = checks.check_runs.filter((check) => check.status !== 'completed')
+            const relevantChecks = checks.check_runs.filter((check) => check.name !== 'summarize')
+            const failedChecks = relevantChecks.filter((check) => check.conclusion === 'failure')
+            const pendingChecks = relevantChecks.filter((check) => check.status !== 'completed')
             const checksState = failedChecks.length > 0
               ? `失败 ${failedChecks.map((check) => check.name).join('、')}`
               : pendingChecks.length > 0
