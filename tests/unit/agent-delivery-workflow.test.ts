@@ -72,6 +72,8 @@ describe('Copilot review 恢复工作流', () => {
     expect(source).toContain('<!-- agent-delivery-state:')
     expect(source).toContain("previous.state === 'blocked-review-request-not-accepted'")
     expect(source).toContain("state: 'blocked-no-response'")
+    expect(source).toContain('const retryAt = previous.nextCheckAt ?? now + waitBeforeBlockedRetry')
+    expect(source).toContain('now >= retryAt')
     expect(source).not.toContain('pulls.merge')
     expect(source).not.toContain('contents: write')
     expect(source).not.toContain("state: 'closed'")

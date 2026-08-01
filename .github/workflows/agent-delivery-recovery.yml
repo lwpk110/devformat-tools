@@ -175,8 +175,8 @@ jobs:
                 let requestReview = false
 
                 if (elapsed >= waitBeforeBlock) {
-                  const blockedFor = lastRetryAt ? now - lastRetryAt : 0
-                  if (previous.state === 'blocked-no-response' && blockedFor >= waitBeforeBlockedRetry) {
+                  const retryAt = previous.nextCheckAt ?? now + waitBeforeBlockedRetry
+                  if (previous.state === 'blocked-no-response' && now >= retryAt) {
                     state = {
                       ...state,
                       state: 'blocked-no-response',
@@ -198,7 +198,7 @@ jobs:
                     state = {
                       ...state,
                       state: 'blocked-no-response',
-                      nextCheckAt: (lastRetryAt ?? now) + waitBeforeBlockedRetry,
+                      nextCheckAt: retryAt,
                     }
                     nextStep = '等待六小时后的 Copilot review 重试。'
                   }
