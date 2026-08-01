@@ -73,6 +73,16 @@ describe('Astro SEO 源契约', () => {
     expect(source).not.toContain('Session & account tools');
   });
 
+  it('首页定位为本地优先的开发者格式转换工具', () => {
+    const source = readFileSync('src/pages/index.astro', 'utf8');
+
+    expect(source).toContain('Free Online Developer Converters - Private JSON, CSV, YAML & More');
+    expect(source).toContain('Free online developer converters for JSON, CSV, YAML, XML, Base64, timestamps and URL encoding. Fast, private browser tools with no uploads or signup.');
+    expect(source).toContain('Local-first developer converters');
+    expect(source).toContain('Private developer format converters.');
+    expect(source).toContain('JSON, CSV, YAML, XML, encoding, and timestamps');
+  });
+
   it('旧单向 YAML URL 只配置永久重定向', () => {
     const redirects = readFileSync('public/_redirects', 'utf8');
     expect(redirects).toContain('/convert/json-to-yaml/ /convert/json-yaml/ 301');

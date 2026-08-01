@@ -3,6 +3,7 @@ import ConverterTool from '../../components/ConverterTool';
 import ContentSection from '../../components/ContentSection.astro';
 import FAQSection from '../../components/FAQSection.astro';
 import convertersData from '../../data/converters.json';
+import { selectRelatedTools } from '../../data/relatedTools';
 import { DEFAULT_SITE_URL } from '../../config/site';
 import Layout from '../../layouts/Layout.astro';
 import type { ConverterData } from '../../types/converter';
@@ -25,7 +26,7 @@ const firstDirection = converter.directions[0];
 const displayName = converter.directions.length > 1
   ? `${firstDirection.from} ↔ ${firstDirection.to}`
   : `${firstDirection.from} → ${firstDirection.to}`;
-const related = converters.filter(({ slug }) => slug !== converter.slug).slice(0, 4);
+const related = selectRelatedTools(converter, converters);
 const baseUrl = import.meta.env.BASE_URL;
 // FAQPage 结构化数据：将页面 FAQ 转为 schema.org 富搜索结果格式
 const faqStructuredData = {
