@@ -3,9 +3,12 @@ import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 import { defineConfig } from 'astro/config';
 
+import { resolveSiteUrl } from './src/config/site';
+
 export default defineConfig({
-  // 默认指向实际生产域名 pages.dev；GitHub Pages 子路径部署通过 SITE_URL/BASE_PATH 注入覆盖
-  site: process.env.SITE_URL ?? 'https://devformat-tools.pages.dev',
+  // 生产域名由统一配置提供，预览与其他部署可用 SITE_URL 覆盖。
+  site: resolveSiteUrl(process.env.SITE_URL),
+  // 子路径与域名分离，避免 canonical 和 sitemap 重复拼接路径。
   base: process.env.BASE_PATH ?? '/',
   output: 'static',
   trailingSlash: 'always',
