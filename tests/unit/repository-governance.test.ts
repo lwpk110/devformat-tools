@@ -43,6 +43,20 @@ describe('仓库交付治理契约', () => {
     expect(template).toContain('Copilot review')
   })
 
+  test('PR 模板声明 agent-managed 接管契约且不将 Secret Scanning 作为门禁', () => {
+    const template = read('.github/pull_request_template.md')
+    expect(template).toContain('agent-managed')
+    expect(template).toContain('## Agent Delivery')
+    expect(template).toContain('## Agent Delivery Status')
+    expect(template).not.toContain('Secret scanning 未发现阻塞问题')
+  })
+
+  test('agent-managed 标签说明自动化接管范围', () => {
+    const label = read('.github/labels/agent-managed.md')
+    expect(label).toContain('仅对显式添加该标签的 PR')
+    expect(label).toContain('不会接管手工 PR')
+  })
+
   test('CI 在 main 的 PR 上使用 Node 20 执行完整门禁', () => {
     const workflow = parse(read('.github/workflows/ci.yml'))
     expect(workflow.on.pull_request.branches).toContain('main')
