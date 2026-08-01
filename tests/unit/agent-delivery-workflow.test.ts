@@ -24,6 +24,7 @@ describe('agent delivery 状态工作流', () => {
 
   test('只处理 agent-managed PR 且不具备合并能力', () => {
     const source = read('.github/workflows/agent-delivery-status.yml')
+    const workflow = parse(source)
     expect(source).toContain("contains(github.event.pull_request.labels.*.name, 'agent-managed')")
     expect(source).toContain('## Agent Delivery Status')
     expect(source).toContain('等待 PR 转为 Ready for review。')
@@ -31,5 +32,6 @@ describe('agent delivery 状态工作流', () => {
     expect(source).toContain('actions/github-script@v7')
     expect(source).not.toContain('pulls.merge')
     expect(source).not.toContain('contents: write')
+    expect(workflow.permissions['pull-requests']).toBe('write')
   })
 })
