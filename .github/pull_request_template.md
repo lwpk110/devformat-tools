@@ -27,4 +27,8 @@ Closes #
 - [ ] GitHub Actions 通过
 - [ ] 已请求 Copilot review
 - [ ] 有效 review comments 已解决
-- [ ] Secret scanning 未发现阻塞问题
+
+## Agent Delivery
+
+- [ ] 添加 `agent-managed` 标签以允许 AI harness 接管；未添加时仅走人工流程。
+- [ ] `## Agent Delivery Status` 已记录 CI、Copilot feedback、修复 commit 与合并结果。

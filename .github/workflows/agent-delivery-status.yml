@@ -1,0 +1,134 @@
+name: Agent Delivery Status
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled, ready_for_review]
+  pull_request_review:
+    types: [submitted]
+  check_suite:
+    types: [completed]
+
+permissions:
+  contents: read
+  # GitHub 将 PR 状态评论视为 pull request 写操作。
+  pull-requests: write
+  issues: write
+  checks: read
+
+jobs:
+  summarize:
+    if: >-
+      (github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'agent-managed')) ||
+      github.event_name == 'pull_request_review' ||
+      (github.event_name == 'check_suite' &&
+      github.event.check_suite.pull_requests[0].number != '')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update agent delivery status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const checkSuitePullRequests = context.payload.check_suite?.pull_requests ?? []
+            if (context.eventName === 'check_suite' && checkSuitePullRequests.length !== 1) {
+              core.info('check_suite 未唯一关联 pull request，跳过状态汇总。')
+              return
+            }
+            const pullRequest = context.payload.pull_request ?? checkSuitePullRequests[0]
+
+            if (!pullRequest?.number) {
+              core.info('事件没有关联 pull request，跳过状态汇总。')
+              return
+            }
+
+            const { owner, repo } = context.repo
+            const { data: pr } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number: pullRequest.number,
+            })
+            const managed = pr.labels.some((label) => label.name === 'agent-managed')
+            if (!managed) {
+              core.info('PR 未由 agent 接管，跳过状态汇总。')
+              return
+            }
+
+            const [{ data: checks }, { data: reviews }, comments, threads] = await Promise.all([
+              github.rest.checks.listForRef({ owner, repo, ref: pr.head.sha, per_page: 100 }),
+              github.rest.pulls.listReviews({ owner, repo, pull_number: pr.number, per_page: 100 }),
+              github.paginate(github.rest.issues.listComments, {
+                owner,
+                repo,
+                issue_number: pr.number,
+                per_page: 100,
+              }),
+              github.graphql(
+                `query($owner: String!, $repo: String!, $number: Int!) {
+                  repository(owner: $owner, name: $repo) {
+                    pullRequest(number: $number) {
+                      reviewThreads(first: 100) {
+                        pageInfo { hasNextPage }
+                        nodes {
+                          isResolved
+                          comments(first: 20) { nodes { author { login } } }
+                        }
+                      }
+                    }
+                  }
+                }`,
+                { owner, repo, number: pr.number },
+              ),
+            ])
+
+            const unresolvedCopilotThreads = threads.repository.pullRequest.reviewThreads.nodes.filter(
+              (thread) => !thread.isResolved && thread.comments.nodes.some(
+                (comment) => /copilot/i.test(comment.author?.login ?? ''),
+              ),
+            ).length
+            const reviewThreadsTruncated = threads.repository.pullRequest.reviewThreads.pageInfo.hasNextPage
+            const copilotReview = reviews
+              .filter((review) => /copilot/i.test(review.user?.login ?? ''))
+              .at(-1)
+            const relevantChecks = checks.check_runs.filter((check) => check.name !== 'summarize')
+            const failedChecks = relevantChecks.filter(
+              (check) => check.status === 'completed' &&
+                !['success', 'neutral', 'skipped'].includes(check.conclusion),
+            )
+            const pendingChecks = relevantChecks.filter((check) => check.status !== 'completed')
+            const checksState = failedChecks.length > 0
+              ? `失败 ${failedChecks.map((check) => check.name).join('、')}`
+              : pendingChecks.length > 0
+                ? `进行中 ${pendingChecks.map((check) => check.name).join('、')}`
+                : '已完成'
+            const nextStep = pr.draft
+              ? '等待 PR 转为 Ready for review。'
+              : failedChecks.length > 0
+                ? '修复失败的 check 并推送新的 commit。'
+                : pendingChecks.length > 0
+                  ? '等待 GitHub checks 完成。'
+                  : unresolvedCopilotThreads > 0 || reviewThreadsTruncated
+                    ? '通过 GitHub MCP 读取并处理有效 Copilot feedback。'
+                    : copilotReview?.state === 'CHANGES_REQUESTED'
+                      ? '处理 Copilot 请求的修改后重新请求 review。'
+                    : copilotReview
+                      ? '确认可合并性后由 MCP Agent 执行 squash merge。'
+                      : '通过 GitHub MCP 请求正式 Copilot review。'
+            const body = [
+              '## Agent Delivery Status',
+              '',
+              `- 触发事件：\`${context.eventName}\``,
+              `- Head SHA：\`${pr.head.sha}\``,
+              `- GitHub checks：${checksState}`,
+              `- Copilot review：${copilotReview ? copilotReview.state : '未完成'}`,
+              `- 未解决 Copilot thread：${unresolvedCopilotThreads}${reviewThreadsTruncated ? '（仅统计前 100 条）' : ''}`,
+              `- 下一步：${nextStep}`,
+            ].join('\n')
+            const previous = comments.find(
+              (comment) => comment.user?.login === 'github-actions[bot]' &&
+                comment.body?.startsWith('## Agent Delivery Status'),
+            )
+            if (previous) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: previous.id, body })
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: pr.number, body })
+            }
