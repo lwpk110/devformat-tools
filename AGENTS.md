@@ -20,7 +20,7 @@
 
 - 首次 push 后创建 Draft PR，并在正文使用 `Closes #<issue-number>`。
 - 所有任务完成后将 PR 转为 Ready，并通过 `request_copilot_review` 请求 GitHub Copilot review。
-- MCP 不支持时，使用 `gh api --method POST repos/<owner>/<repo>/pulls/<pr>/requested_reviewers -f 'reviewers[]=copilot-pull-request-reviewer[bot]'` 请求审查；随后回读 `requested_reviewers`，必须确认列表包含 `Copilot`，不能把请求命令成功当作审查已登记。
+- MCP 不支持时，使用 `gh api --method POST repos/<owner>/<repo>/pulls/<pr>/requested_reviewers -f 'reviewers[]=copilot-pull-request-reviewer[bot]'` 请求审查；随后运行 `gh api repos/<owner>/<repo>/pulls/<pr>/requested_reviewers --jq '.users[].login'` 回读。以 `login` 匹配 `/copilot/i`（例如 `copilot-pull-request-reviewer[bot]`）为准，不能把请求命令成功或显示名当作审查已登记。
 - 对有效 unresolved feedback 创建修复提交并 push，必要时重新请求 review。
 - 对 `agent-managed` PR，必须通过 GitHub MCP 读取正式 Copilot review 与行级 thread；每条有效 unresolved feedback 都要有可验证的修复 commit 和状态评论记录。
 - 只有 `npm test`、`npm run check`、`npm run build`、GitHub Actions、Copilot review 和冲突检查全部通过后才允许 squash merge。
