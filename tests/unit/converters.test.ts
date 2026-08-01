@@ -62,6 +62,12 @@ describe('高频双向转换', () => {
     );
   });
 
+  it('URL 编码拒绝非法 UTF-16 输入', () => {
+    expect(() => convert('url-encode', '\uD800')).toThrow(
+      new ConversionError('URL 编码格式无效'),
+    );
+  });
+
   it('YAML 与 JSON 支持 nested object 和 array', () => {
     const yaml = convert('json-to-yaml', '{"service":"api","ports":[80,443]}');
     expect(yaml).toContain('service: api');
