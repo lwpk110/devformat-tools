@@ -85,7 +85,10 @@ jobs:
                     per_page: 100,
                   }),
                 ])
-                const statusComment = comments.find((comment) => comment.body?.startsWith(statusTitle))
+                const statusComment = comments
+                  .filter((comment) => comment.user?.login === 'github-actions[bot]' &&
+                    comment.body?.startsWith(statusTitle))
+                  .at(-1)
                 const previous = readState(statusComment?.body)
                 const copilotReview = reviews
                   .filter((review) => /copilot/i.test(review.user?.login ?? ''))
@@ -156,14 +159,15 @@ jobs:
                   continue
                 }
 
-                if (previous.state === 'blocked-review-request-not-accepted') {
+                const resetWaiting = previous.state === 'blocked-review-request-not-accepted'
+                if (resetWaiting) {
                   await removeBlocked()
                 }
 
-                const waitingSince = previous.waitingSince ?? now
+                const waitingSince = resetWaiting ? now : previous.waitingSince ?? now
                 const elapsed = now - waitingSince
-                const requestCount = previous.requestCount ?? 0
-                const lastRetryAt = previous.lastRetryAt ?? null
+                const requestCount = resetWaiting ? 0 : previous.requestCount ?? 0
+                const lastRetryAt = resetWaiting ? null : previous.lastRetryAt ?? null
                 let state = {
                   state: 'waiting-for-review',
                   waitingSince,
