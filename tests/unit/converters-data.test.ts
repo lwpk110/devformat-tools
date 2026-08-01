@@ -5,9 +5,9 @@ import { describe, expect, it } from 'vitest';
 import converters from '../../src/data/converters.json';
 
 describe('converter 数据契约', () => {
-  it('提供 9 个字段完整且 slug 唯一的 canonical converter', () => {
-    expect(converters).toHaveLength(9);
-    expect(new Set(converters.map(({ slug }) => slug)).size).toBe(9);
+  it('提供 10 个字段完整且 slug 唯一的 canonical converter', () => {
+    expect(converters).toHaveLength(10);
+    expect(new Set(converters.map(({ slug }) => slug)).size).toBe(10);
 
     for (const converter of converters) {
       expect(converter).toEqual(
@@ -36,10 +36,11 @@ describe('converter 数据契约', () => {
     }
   });
 
-  it('按 SEO 优先级发布五个双向工具和四个专业生成器', () => {
+  it('按 SEO 优先级发布五个精选双向工具、一个普通双向工具和四个专业生成器', () => {
     expect(converters.map(({ slug }) => slug)).toEqual([
       'json-csv',
       'base64',
+      'url-encode',
       'json-yaml',
       'json-xml',
       'unix-timestamp',
@@ -48,9 +49,13 @@ describe('converter 数据契约', () => {
       'json-to-python-dataclass',
       'json-to-rust-struct',
     ]);
-    expect(converters.slice(0, 5).map(({ featuredRank }) => featuredRank)).toEqual([1, 2, 3, 4, 5]);
-    expect(converters.slice(0, 5).every(({ directions }) => directions.length === 2)).toBe(true);
-    expect(converters.slice(5).every(({ directions }) => directions.length === 1)).toBe(true);
+    const featured = converters.filter(({ featuredRank }) => featuredRank !== undefined);
+    expect(featured.map(({ featuredRank }) => featuredRank)).toEqual([1, 2, 3, 4, 5]);
+    expect(featured.every(({ directions }) => directions.length === 2)).toBe(true);
+    const urlConverter = converters.find(({ slug }) => slug === 'url-encode');
+    expect(urlConverter).toEqual(expect.objectContaining({ category: 'Encoding', directions: expect.any(Array) }));
+    expect(urlConverter).not.toHaveProperty('featuredRank');
+    expect(converters.filter(({ directions }) => directions.length === 1)).toHaveLength(4);
   });
 
   it('公开文案使用固定方向按钮而不是已移除的 Swap', () => {

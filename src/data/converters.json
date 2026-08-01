@@ -149,6 +149,81 @@
     ]
   },
   {
+    "slug": "url-encode",
+    "category": "Encoding",
+    "title": "URL Encoder & Decoder Online - Free and Private",
+    "description": "Encode text for URL components or decode percent-encoded URLs locally in your browser. Unicode-safe, instant and no uploads.",
+    "directions": [
+      {
+        "id": "url-encode",
+        "from": "Text",
+        "to": "URL encoded",
+        "sampleInput": "Hello World + 你好",
+        "sampleOutput": "Hello%20World%20%2B%20%E4%BD%A0%E5%A5%BD",
+        "downloadExtension": "txt",
+        "summary": "Encode text safely for a URL path, query value or fragment."
+      },
+      {
+        "id": "url-decode",
+        "from": "URL encoded",
+        "to": "Text",
+        "sampleInput": "Hello%20World%20%2B%20%E4%BD%A0%E5%A5%BD",
+        "sampleOutput": "Hello World + 你好",
+        "downloadExtension": "txt",
+        "summary": "Decode percent-encoded URL component text into readable text."
+      }
+    ],
+    "faq": [
+      {
+        "q": "What does URL encoding do?",
+        "a": "URL encoding replaces characters that have special URL meanings with percent-encoded UTF-8 bytes, so text can safely appear in a URL path, query value or fragment."
+      },
+      {
+        "q": "Does this tool treat plus as a space?",
+        "a": "No. This tool uses URL component encoding, where plus is a literal character. It encodes + as %2B and decodes + back to +."
+      },
+      {
+        "q": "Why does a space become %20 instead of +?",
+        "a": "%20 is the standard URL component representation for a space. The + convention belongs to HTML form encoding and is not applied here."
+      },
+      {
+        "q": "Does URL encoding support Unicode and emoji?",
+        "a": "Yes. Text is encoded as UTF-8 percent escapes, so CJK characters, accented text and emoji round-trip correctly."
+      },
+      {
+        "q": "Why can URL decoding fail?",
+        "a": "Decoding requires complete valid percent escapes. Inputs such as %ZZ, a trailing percent sign or invalid UTF-8 bytes cannot be decoded."
+      },
+      {
+        "q": "Is my URL text uploaded?",
+        "a": "No. Encoding and decoding run in your browser memory. Nothing is uploaded, stored or logged on a server."
+      }
+    ],
+    "content": [
+      {
+        "heading": "URL component encoding",
+        "body": [
+          "URLs reserve characters such as spaces, slashes, question marks and hashes for structure. Percent encoding represents the UTF-8 bytes of text with a percent sign and two hexadecimal digits, letting a value travel safely inside a path segment, query value or fragment.",
+          "This converter uses encodeURIComponent, the browser API for encoding a single URL component. It does not parse or rewrite a complete URL, so protocol, host and separators stay outside the text you encode."
+        ]
+      },
+      {
+        "heading": "Plus signs and form encoding",
+        "body": [
+          "A plus sign is ordinary text in a URL component. This tool encodes it as %2B and leaves an input plus sign unchanged when decoding, preserving values such as C++ and a+b exactly.",
+          "Some HTML forms use application/x-www-form-urlencoded, where plus represents a space. That is a different format with different rules; use a dedicated form encoder when that server-side convention is required."
+        ]
+      },
+      {
+        "heading": "Decode URLs safely",
+        "body": [
+          "Valid percent-encoded text can be decoded back to readable Unicode, including Chinese, accented characters and emoji. Decoding is reversible when the source used URL component encoding.",
+          "Malformed escapes such as %ZZ or a lone percent sign are rejected instead of being partially changed. Correct the source text before decoding so that its meaning stays unambiguous."
+        ]
+      }
+    ]
+  },
+  {
     "slug": "json-yaml",
     "category": "Data",
     "title": "JSON to YAML & YAML to JSON Converter - Online & Private",
