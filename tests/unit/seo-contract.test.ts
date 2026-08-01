@@ -3,13 +3,14 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 import { GET } from '../../src/pages/robots.txt';
+import { DEFAULT_SITE_URL } from '../../src/config/site';
 
 describe('Astro SEO 源契约', () => {
   it('robots.txt 允许抓取并声明绝对 sitemap index', async () => {
     const response = await GET({} as never);
     expect(response.headers.get('content-type')).toContain('text/plain');
     expect(await response.text()).toBe(
-      'User-agent: *\nAllow: /\nSitemap: https://devformat.tools/sitemap-index.xml\n',
+      `User-agent: *\nAllow: /\nSitemap: ${DEFAULT_SITE_URL}/sitemap-index.xml\n`,
     );
   });
 
@@ -31,6 +32,13 @@ describe('Astro SEO 源契约', () => {
     expect(source).toContain('PUBLIC_CF_ANALYTICS_TOKEN');
     expect(source).toContain('google-site-verification');
     expect(source).toContain('cloudflareinsights.com/beacon.min.js');
+    expect(source).toContain('DEFAULT_SITE_URL');
+  });
+
+  it('robots 与面包屑回退到统一站点配置', () => {
+    expect(readFileSync('src/pages/robots.txt.ts', 'utf8')).toContain('DEFAULT_SITE_URL');
+    expect(readFileSync('src/pages/convert/[slug].astro', 'utf8')).toContain('DEFAULT_SITE_URL');
+    expect(readFileSync('src/pages/session-converter.astro', 'utf8')).toContain('DEFAULT_SITE_URL');
   });
 
   it('转换页输出 FAQPage 结构化数据覆盖全部 FAQ', () => {
@@ -52,13 +60,15 @@ describe('Astro SEO 源契约', () => {
     expect(source).toContain('<FAQSection');
   });
 
-  it('首页先展示 SEO 排序的 Popular，再提供分类 All tools', () => {
+  it('首页从统一工具目录先展示 Popular tools，再提供分类 All tools', () => {
     const source = readFileSync('src/pages/index.astro', 'utf8');
-    expect(source.indexOf('Popular conversions')).toBeGreaterThan(0);
-    expect(source.indexOf('All tools')).toBeGreaterThan(source.indexOf('Popular conversions'));
-    expect(source).toContain('featuredRank');
-    expect(source).toContain('allCategories');
-    expect(source).toContain('convert/${converter.slug}/');
+    expect(source.indexOf('Popular tools')).toBeGreaterThan(0);
+    expect(source.indexOf('All tools')).toBeGreaterThan(source.indexOf('Popular tools'));
+    expect(source).toContain("from '../data/toolCatalog'");
+    expect(source).toContain('popularTools');
+    expect(source).toContain('toolCategories');
+    expect(source).not.toContain('id="session-tools"');
+    expect(source).not.toContain('Session & account tools');
   });
 
   it('旧单向 YAML URL 只配置永久重定向', () => {

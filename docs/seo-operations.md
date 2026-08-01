@@ -8,13 +8,13 @@
 
 | 能力 | 实现位置 | 说明 |
 |---|---|---|
-| canonical | `Layout.astro` | 基于 `SITE_URL` + `BASE_URL` 生成，指向实际生产域名 `https://devformat-tools.pages.dev/` |
+| canonical | `Layout.astro` | 基于统一站点配置 + `BASE_URL` 生成，默认指向 `https://abc123456.uk/` |
 | OpenGraph | `Layout.astro` | og:title、og:description、og:type、og:url、og:site_name、og:image |
 | Twitter Card | `Layout.astro` | `summary_large_image` + twitter:image |
-| sitemap | `astro.config.mjs` + `@astrojs/sitemap` | 构建期自动生成 `sitemap-index.xml` 与 `sitemap-0.xml` |
+| sitemap | `astro.config.ts` + `@astrojs/sitemap` | 构建期自动生成 `sitemap-index.xml` 与 `sitemap-0.xml` |
 | robots.txt | `src/pages/robots.txt.ts` | 允许全部抓取并声明 sitemap index |
 
-生产域名（canonical/sitemap/robots）由 `astro.config.mjs` 的 `SITE_URL` 环境变量控制，默认 `https://devformat-tools.pages.dev`。GitHub Pages 子路径部署通过 `SITE_URL` + `BASE_PATH` 覆盖。
+生产域名由 `src/config/site.ts` 的 `DEFAULT_SITE_URL` 控制，当前为 `https://abc123456.uk`。`SITE_URL` 可在预览或其他部署环境覆盖域名，`BASE_PATH` 单独配置子路径；两者不可混用，避免 canonical 与 sitemap 出现重复路径。
 
 ## 2. 结构化数据（JSON-LD）
 
@@ -40,7 +40,7 @@
 
 - **实现**：`Layout.astro` 注入 beacon script，token 通过 `PUBLIC_CF_ANALYTICS_TOKEN` 环境变量或内置默认值提供。
 - **内置默认值**：token 作为公开设计值硬编码在 Layout（`src/layouts/Layout.astro`），无需环境变量即稳定渲染。多环境区分时可设同名环境变量覆盖。
-- **查看数据**：Cloudflare Dashboard → Web Analytics → 选择 `devformat-tools.pages.dev`。可查看 PV/UV/来源/国家/路径。
+- **查看数据**：Cloudflare Dashboard → Web Analytics → 选择 `abc123456.uk` 对应站点。可查看 PV/UV/来源/国家/路径。
 - **获取 token**：Cloudflare Dashboard → Web Analytics → Add a site → 填入域名 → 生成的 JS 片段中 `data-cf-beacon='{"token": "XXXX"}'` 的 `XXXX`。
 
 ## 5. 搜索排行：Google Search Console
@@ -50,11 +50,11 @@ GSC 提供 Google 搜索的曝光、点击、关键词、索引状态等数据�
 ### 5.1 站点所有权验证
 
 - Layout 已注入 `google-site-verification` meta 标签，验证值通过 `PUBLIC_GOOGLE_SITE_VERIFICATION` 环境变量或内置默认值提供。
-- **确认验证**：打开 [Google Search Console](https://search.google.com/search-console) → 找到 `https://devformat-tools.pages.dev/` 资源 → 点「验证」。验证通过后即解锁数据。
+- **确认验证**：打开 [Google Search Console](https://search.google.com/search-console) → 找到 `https://abc123456.uk/` 资源 → 点「验证」。验证通过后即解锁数据。
 
 ### 5.2 提交 Sitemap 加速收录
 
-- GSC → 左侧「Sitemaps」→ 提交 `https://devformat-tools.pages.dev/sitemap-index.xml`。
+- GSC → 左侧「Sitemaps」→ 提交 `https://abc123456.uk/sitemap-index.xml`。
 - 提交后 Google 会定期抓取，可在 GSC 查看索引覆盖率。
 
 ### 5.3 查看搜索数据
@@ -70,13 +70,13 @@ GSC 提供 Google 搜索的曝光、点击、关键词、索引状态等数据�
 1. 环境变量 `PUBLIC_CF_ANALYTICS_TOKEN` / `PUBLIC_GOOGLE_SITE_VERIFICATION`（若设置则覆盖默认值）
 2. Layout 内置默认值
 
-GitHub Pages 子路径部署（`deploy-github-pages.yml`）注入 `SITE_URL` + `BASE_PATH`，但监控 token 与 GSC 验证使用默认值（指向 pages.dev），无需额外配置。
+GitHub Pages 子路径部署（`deploy-github-pages.yml`）可注入 `SITE_URL` + `BASE_PATH`；监控 token 与 GSC 验证值需要为对应环境分别配置，不能复用生产站点资源。
 
 ## 7. SEO 验证清单
 
 部署后可按以下清单验证 SEO 与监控是否生效：
 
-- [ ] 访问 `https://devformat-tools.pages.dev/`，查看页面源码包含 canonical、og:image、CF beacon、google-site-verification
+- [ ] 访问 `https://abc123456.uk/`，查看页面源码包含 canonical、og:image、CF beacon、google-site-verification
 - [ ] 访问 `/sitemap-index.xml` 返回 200，内容指向实际域名
 - [ ] 访问 `/robots.txt`，Sitemap 指向实际域名
 - [ ] 转换页源码包含 FAQPage、BreadcrumbList JSON-LD
