@@ -26,6 +26,12 @@
 - 只有 `npm test`、`npm run check`、`npm run build`、GitHub Actions、Copilot review 和冲突检查全部通过后才允许 squash merge。
 - 合并后验证 Issue 已关闭、远端功能分支已删除与 Production 部署成功，再同步本地 `main`。对用户入口域名，必须实际请求自定义域名并确认新 title、description 或版本标识已生效；仅凭 Preview URL、Pages deployment 或 GitHub Actions 成功不足以证明生产发布。禁止 force push、绕过 hooks 或重写已推送历史。
 
+## 文档管理
+
+- 仓库保留的事实来源文档：`README.md`、`CONTRIBUTING.md`、`AGENTS.md`、`docs/PRD-*.md`、`docs/decisions/`（ADR）、`docs/seo-operations.md`、`docs/superpowers/specs/`（设计稿）、`docs/verification/`（验收记录）与 `docs/research/`（已归档研究）。
+- 执行计划（原 `docs/superpowers/plans/` 的新增去向）、工作日志、方案草稿与 GSC 等外部数据复盘存放于 Obsidian 工作区（`D:\Notes\20-项目\进行中\devformat-tools`），不提交仓库；既有已提交文件不迁移、不改写历史。
+- Obsidian 笔记只链接仓库文档，不复制正文；方案成熟后按交付流程沉淀为仓库 ADR 或 spec。
+
 ## SEO 与产品演进
 
 - `src/data/converters.json` 是标准 converter 的事实来源；新增或修改 converter 时，必须在同一原子任务中维护 slug、category、directions、title、description、FAQ 和正文内容，并让目录、静态路由与 sitemap 从该数据派生。
