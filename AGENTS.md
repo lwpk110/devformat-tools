@@ -29,7 +29,7 @@
 ## 文档管理
 
 - 仓库保留的事实来源文档：`README.md`、`CONTRIBUTING.md`、`AGENTS.md`、`docs/PRD-*.md`、`docs/decisions/`（ADR）、`docs/seo-operations.md`、`docs/superpowers/specs/`（设计稿）、`docs/verification/`（验收记录）与 `docs/research/`（已归档研究）。
-- 执行计划（原 `docs/superpowers/plans/` 的新增去向）、工作日志、方案草稿与 GSC 等外部数据复盘存放于 Obsidian 工作区（`D:\Notes\20-项目\进行中\devformat-tools`），不提交仓库；既有已提交文件不迁移、不改写历史。
+- 执行计划（原 `docs/superpowers/plans/` 的新增去向）、工作日志、方案草稿与 Google Search Console（GSC）等外部数据复盘存放于个人 Obsidian 工作区（路径因机器而异，示例：`D:\Notes\20-项目\进行中\devformat-tools`），不提交仓库；既有已提交文件不迁移、不改写历史。
 - Obsidian 笔记只链接仓库文档，不复制正文；方案成熟后按交付流程沉淀为仓库 ADR 或 spec。
 
 ## SEO 与产品演进
