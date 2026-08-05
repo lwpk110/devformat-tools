@@ -78,7 +78,7 @@
     "slug": "base64",
     "category": "Encoding",
     "title": "Base64 Encode & Decode Online - UTF-8 and Private",
-    "description": "Encode text to Base64 or decode Base64 to UTF-8 locally in your browser. Free, instant and no uploads.",
+    "description": "Encode UTF-8 text to Base64 or decode Base64 back to text locally in your browser. Free, instant, emoji-safe and no server uploads.",
     "featuredRank": 2,
     "directions": [
       {
@@ -152,7 +152,7 @@
     "slug": "url-encode",
     "category": "Encoding",
     "title": "URL Encoder & Decoder Online - Free and Private",
-    "description": "Encode text for URL components or decode percent-encoded URLs locally in your browser. Unicode-safe, instant and no uploads.",
+    "description": "Encode text for URL components or decode percent-encoded URLs locally in your browser. Unicode-safe, instant, reversible and no uploads.",
     "directions": [
       {
         "id": "url-encode",
@@ -371,7 +371,7 @@
     "slug": "unix-timestamp",
     "category": "Time",
     "title": "Unix Timestamp to Date & Date to Timestamp Converter",
-    "description": "Convert Unix timestamps in seconds or milliseconds to UTC ISO dates, or convert ISO DateTime back to Unix seconds.",
+    "description": "Convert Unix timestamps in seconds or milliseconds to UTC ISO 8601 dates, or convert ISO DateTime back to Unix seconds locally and instantly.",
     "featuredRank": 5,
     "directions": [
       {
@@ -505,7 +505,7 @@
     "slug": "json-to-typescript",
     "category": "Type Generators",
     "title": "JSON to TypeScript Interface Converter",
-    "description": "Generate clean TypeScript interfaces from JSON locally in your browser, with nested object and array support.",
+    "description": "Generate clean TypeScript interfaces from JSON locally in your browser. Supports nested objects, arrays, optional fields and ready-to-paste output with no uploads.",
     "directions": [
       {
         "id": "json-to-typescript",
@@ -569,7 +569,7 @@
     "slug": "json-to-python-dataclass",
     "category": "Type Generators",
     "title": "JSON to Python Dataclass Generator",
-    "description": "Turn JSON objects into typed Python dataclasses in your browser, including nested models and lists.",
+    "description": "Turn JSON objects into typed Python dataclasses in your browser. Generates nested models, list[T] annotations and @dataclass decorators with no server upload.",
     "directions": [
       {
         "id": "json-to-python-dataclass",
@@ -633,7 +633,7 @@
     "slug": "json-to-rust-struct",
     "category": "Type Generators",
     "title": "JSON to Rust Struct Generator",
-    "description": "Generate serde-ready Rust structs from JSON locally, with nested objects, vectors, and renamed fields.",
+    "description": "Generate serde-ready Rust structs from JSON locally in your browser. Supports nested objects, Vec<T>, Option<T>, rename attributes and no uploads.",
     "directions": [
       {
         "id": "json-to-rust-struct",
