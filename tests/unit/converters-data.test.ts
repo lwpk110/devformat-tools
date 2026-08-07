@@ -58,11 +58,23 @@ describe('converter 数据契约', () => {
     expect(converters.filter(({ directions }) => directions.length === 1)).toHaveLength(4);
   });
 
+  it.each(converters)('$slug 的 description 长度在 108–165 字符区间', (converter) => {
+    expect(converter.description.length).toBeGreaterThanOrEqual(108);
+    expect(converter.description.length).toBeLessThanOrEqual(165);
+  });
+
   it('公开文案使用固定方向按钮而不是已移除的 Swap', () => {
     const faqCopy = converters.flatMap(({ faq }) => faq.flatMap(({ q, a }) => [q, a]));
     const homeSource = readFileSync('src/pages/index.astro', 'utf8');
 
     expect(faqCopy.join('\n')).not.toMatch(/\bSwap\b/i);
     expect(homeSource).not.toMatch(/\bSwap\b/i);
+  });
+
+  it('description 长度保持在 108 到 165 字符之间', () => {
+    for (const converter of converters) {
+      expect(converter.description.length).toBeGreaterThanOrEqual(108);
+      expect(converter.description.length).toBeLessThanOrEqual(165);
+    }
   });
 });
