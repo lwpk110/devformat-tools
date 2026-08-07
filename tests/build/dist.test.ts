@@ -130,4 +130,12 @@ describe('静态构建产物', () => {
     expect(llms).toContain('## Suggested starting points');
     expect(llms).toContain('## Editorial note');
   });
+
+  it('llms.txt 内容由 converters.json 派生，包含各 converter 标题与 description', () => {
+    const llms = read('llms.txt');
+    for (const converter of converters) {
+      expect(llms).toContain(converter.title);
+      expect(llms).toContain(converter.description);
+    }
+  });
 });
