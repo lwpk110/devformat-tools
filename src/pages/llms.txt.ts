@@ -11,6 +11,15 @@ export const GET: APIRoute = () => {
   parts.push('DevFormat.tools is a collection of free, privacy-first developer format converters.');
   parts.push('Every conversion runs entirely in the browser memory: no uploads, no accounts, no server-side processing.');
   parts.push('');
+  parts.push('## Suggested starting points');
+  parts.push('');
+  parts.push('- https://abc123456.uk/');
+  parts.push('- https://abc123456.uk/convert/json-csv/');
+  parts.push('- https://abc123456.uk/convert/base64/');
+  parts.push('- https://abc123456.uk/guides/json-vs-csv/');
+  parts.push('- https://abc123456.uk/guides/base64-vs-encryption/');
+  parts.push('- https://abc123456.uk/guides/seo-growth-and-monetization/');
+  parts.push('');
   parts.push('## Available tools');
   parts.push('');
 
@@ -37,6 +46,11 @@ export const GET: APIRoute = () => {
   parts.push('## Privacy');
   parts.push('');
   parts.push('Input data is processed only inside the user\'s browser. No data is transmitted to, stored by, or logged on any server.');
+  parts.push('');
+
+  parts.push('## Editorial note');
+  parts.push('');
+  parts.push('The best tool pages answer the task immediately, then explain edge cases, failure modes, and when not to use the tool. This site follows that pattern so the page is useful to people and easy to cite by LLMs.');
   parts.push('');
 
   const body = parts.join('\n');
