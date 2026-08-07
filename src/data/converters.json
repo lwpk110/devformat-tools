@@ -66,14 +66,21 @@
           "The parser handles both \r\n and \n line endings and trims no data, so values are preserved exactly as written."
         ]
       },
-      {
-        "heading": "When to use CSV instead of JSON",
-        "body": [
-          "CSV is ideal when you need a tabular, human-readable format for spreadsheets, data exchange with legacy systems or bulk database imports. JSON is better for nested or hierarchical data. Converting between the two lets you move records between APIs and spreadsheet workflows without losing structure."
-        ]
-      }
-    ]
-  },
+    {
+      "heading": "When to use CSV instead of JSON",
+      "body": [
+        "CSV is ideal when you need a tabular, human-readable format for spreadsheets, data exchange with legacy systems or bulk database imports. JSON is better for nested or hierarchical data. Converting between the two lets you move records between APIs and spreadsheet workflows without losing structure."
+      ]
+    },
+    {
+      "heading": "Common CSV mistakes to avoid",
+      "body": [
+        "A frequent mistake is assuming that every row can contain a different set of keys. For clean CSV exports, keep the schema stable across objects so columns stay aligned. Another common problem is flattening only some nested values and leaving the rest as raw object text, which makes downstream analysis harder.",
+        "If a downstream system expects a particular delimiter or header order, confirm that before converting. A converter can preserve data accurately, but it cannot infer business rules that are not present in the source JSON."
+      ]
+    }
+  ]
+},
   {
     "slug": "base64",
     "category": "Encoding",
@@ -140,14 +147,21 @@
           "Base64 is an encoding, not encryption. Anyone can decode it, so never use it to protect secrets or passwords. Its purpose is transport safety, not confidentiality. For security, combine Base64 transport with a real encryption layer such as AES."
         ]
       },
-      {
-        "heading": "Common Base64 use cases",
-        "body": [
-          "Embed images and fonts as data URIs in CSS and HTML, store small binary blobs inside JSON or YAML configuration, transfer credentials in HTTP Basic authentication headers, and attach files in MIME email. Each of these channels only reliably handles text, so Base64 bridges binary data into them."
-        ]
-      }
-    ]
-  },
+    {
+      "heading": "Common Base64 use cases",
+      "body": [
+        "Embed images and fonts as data URIs in CSS and HTML, store small binary blobs inside JSON or YAML configuration, transfer credentials in HTTP Basic authentication headers, and attach files in MIME email. Each of these channels only reliably handles text, so Base64 bridges binary data into them."
+      ]
+    },
+    {
+      "heading": "When decoding fails",
+      "body": [
+        "Decoding fails when the input contains invalid characters, missing padding or strings that are not complete Base64 data. That is usually a sign the source text was copied from a wrapped line, modified by another tool, or escaped twice.",
+        "If a payload came from a URL or form field, inspect the transport layer first. A string that looks like Base64 may actually have URL encoding, whitespace or line breaks layered on top."
+      ]
+    }
+  ]
+},
   {
     "slug": "url-encode",
     "category": "Encoding",
@@ -214,15 +228,22 @@
           "Some HTML forms use application/x-www-form-urlencoded, where plus represents a space. That is a different format with different rules; use a dedicated form encoder when that server-side convention is required."
         ]
       },
-      {
-        "heading": "Decode URLs safely",
-        "body": [
-          "Valid percent-encoded text can be decoded back to readable Unicode, including Chinese, accented characters and emoji. Decoding is reversible when the source used URL component encoding.",
-          "Malformed escapes such as %ZZ or a lone percent sign are rejected instead of being partially changed. Correct the source text before decoding so that its meaning stays unambiguous."
-        ]
-      }
-    ]
-  },
+    {
+      "heading": "Decode URLs safely",
+      "body": [
+        "Valid percent-encoded text can be decoded back to readable Unicode, including Chinese, accented characters and emoji. Decoding is reversible when the source used URL component encoding.",
+        "Malformed escapes such as %ZZ or a lone percent sign are rejected instead of being partially changed. Correct the source text before decoding so that its meaning stays unambiguous."
+      ]
+    },
+    {
+      "heading": "Path, query, and fragment differences",
+      "body": [
+        "Different URL parts have different escaping needs. Path segments should protect slashes, query values often need additional escaping before they are appended, and fragments may carry application state that should not be rewritten blindly.",
+        "This tool is most useful when you already know the exact substring that needs escaping. If you need to normalize an entire URL, encode each component separately instead of pasting the whole URL into a single field."
+      ]
+    }
+  ]
+},
   {
     "slug": "json-yaml",
     "category": "Data",
@@ -497,6 +518,13 @@
         "heading": "Integrating with your Go project",
         "body": [
           "Copy the generated structs into a models package and pass a value of the root struct to json.Unmarshal. Because the json tags match your API keys exactly, you avoid manual field-by-field mapping and can evolve the types as the schema changes."
+        ]
+      },
+      {
+        "heading": "What to review before shipping",
+        "body": [
+          "Generated code is a starting point, not a final contract. Review naming, nullability, number precision and slice semantics before shipping the structs into production code. Public API payloads often need custom types or validation rules that cannot be inferred from a single sample.",
+          "If your schema is stable, consider checking the generated structs into source control and regenerating only when the API changes. That keeps compile errors visible and avoids hidden drift between the sample JSON and the codebase."
         ]
       }
     ]
