@@ -597,7 +597,7 @@
     "slug": "json-to-python-dataclass",
     "category": "Type Generators",
     "title": "JSON to Python Dataclass Generator",
-    "description": "Turn JSON objects into typed Python dataclasses in your browser. Generates nested models, list[T] annotations and @dataclass decorators with no server upload.",
+    "description": "Turn JSON objects into typed Python dataclasses in your browser. Generates nested models, list[T] annotations and @dataclass decorators with no server uploads.",
     "directions": [
       {
         "id": "json-to-python-dataclass",
