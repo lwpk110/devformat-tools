@@ -87,6 +87,7 @@ describe('静态构建产物', () => {
       expect(html).toContain(`href="${baseUrl}convert/${converter.slug}/"`);
       expect(html).toContain(converter.directions[0].to);
     }
+    expect(html).toContain(`href="${baseUrl}guides/seo-growth-and-monetization/"`);
   });
 
   it('所有页面注入 Cloudflare Web Analytics beacon 与 Google 验证 meta', () => {
@@ -107,11 +108,13 @@ describe('静态构建产物', () => {
 
   it('robots.txt 指向 sitemap index', () => {
     expect(read('robots.txt')).toBe(
-      `User-agent: *\nAllow: /\nSitemap: ${SITE}${baseUrl}sitemap-index.xml\n`,
+      `User-agent: *\nAllow: /\nSitemap: ${SITE}${baseUrl}sitemap.xml\nSitemap: ${SITE}${baseUrl}sitemap-index.xml\n`,
     );
   });
 
-  it('sitemap index 与 sitemap-0.xml 存在并覆盖全部 slug', () => {
+  it('sitemap.xml、sitemap index 与 sitemap-0.xml 存在并覆盖全部 slug', () => {
+    const sitemapXml = read('sitemap.xml');
+    expect(sitemapXml).toContain(`<loc>${SITE}${baseUrl}sitemap-0.xml</loc>`);
     expect(read('sitemap-index.xml')).toContain(`${SITE}${baseUrl}sitemap-0.xml`);
     const sitemap = read('sitemap-0.xml');
     expect(sitemap).toContain(`<loc>${SITE}${baseUrl}</loc>`);
@@ -119,5 +122,12 @@ describe('静态构建产物', () => {
       expect(sitemap).toContain(`<loc>${SITE}${baseUrl}convert/${converter.slug}/</loc>`);
     }
     expect(sitemap).not.toContain('/convert/json-to-yaml/');
+  });
+
+  it('llms.txt 提供推荐入口与编辑批评说明', () => {
+    const llms = read('llms.txt');
+    expect(llms).toContain(`${SITE}${baseUrl}guides/seo-growth-and-monetization/`);
+    expect(llms).toContain('## Suggested starting points');
+    expect(llms).toContain('## Editorial note');
   });
 });

@@ -50,7 +50,7 @@ const converterTools: ToolCatalogEntry[] = (convertersData as ConverterData[]).m
   href: `/convert/${converter.slug}/`,
   category: converter.category,
   categoryRank: categoryRanks[converter.category] ?? Number.MAX_SAFE_INTEGER,
-  homepageRank: converter.featuredRank === undefined ? undefined : converter.featuredRank + 1,
+  homepageRank: converter.featuredRank === undefined ? undefined : converter.featuredRank + 2,
   kind: 'converter',
 }));
 
@@ -65,7 +65,18 @@ const sessionTool: ToolCatalogEntry = {
   kind: 'session',
 };
 
-export const toolCatalog = [sessionTool, ...converterTools].sort(compareTools);
+const cardKeyTool: ToolCatalogEntry = {
+  id: 'cardkey-to-sub2api',
+  name: 'Card Key to Sub2API Converter',
+  description: 'Convert card keys (email----pwd----token) into Sub2API import JSON, token lists or CPA format locally.',
+  href: '/cardkey-converter/',
+  category: 'Account & Session',
+  categoryRank: 1,
+  homepageRank: 2,
+  kind: 'session',
+};
+
+export const toolCatalog = [sessionTool, cardKeyTool, ...converterTools].sort(compareTools);
 
 export const popularTools = toolCatalog
   .filter((tool) => tool.homepageRank !== undefined)

@@ -10,7 +10,7 @@ describe('Astro SEO 源契约', () => {
     const response = await GET({} as never);
     expect(response.headers.get('content-type')).toContain('text/plain');
     expect(await response.text()).toBe(
-      `User-agent: *\nAllow: /\nSitemap: ${DEFAULT_SITE_URL}/sitemap-index.xml\n`,
+      `User-agent: *\nAllow: /\nSitemap: ${DEFAULT_SITE_URL}/sitemap.xml\nSitemap: ${DEFAULT_SITE_URL}/sitemap-index.xml\n`,
     );
   });
 
@@ -41,6 +41,13 @@ describe('Astro SEO 源契约', () => {
     expect(readFileSync('src/pages/robots.txt.ts', 'utf8')).toContain('DEFAULT_SITE_URL');
     expect(readFileSync('src/pages/convert/[slug].astro', 'utf8')).toContain('DEFAULT_SITE_URL');
     expect(readFileSync('src/pages/session-converter.astro', 'utf8')).toContain('DEFAULT_SITE_URL');
+    expect(readFileSync('src/pages/cardkey-converter.astro', 'utf8')).toContain('DEFAULT_SITE_URL');
+  });
+
+  it('sitemap.xml 和 llms.txt 路由作为 SEO 入口存在', () => {
+    expect(readFileSync('src/pages/sitemap.xml.ts', 'utf8')).toContain('sitemap-0.xml');
+    expect(readFileSync('src/pages/llms.txt.ts', 'utf8')).toContain('Suggested starting points');
+    expect(readFileSync('src/pages/llms.txt.ts', 'utf8')).toContain('Editorial note');
   });
 
   it('转换页输出 FAQPage 结构化数据覆盖全部 FAQ', () => {
@@ -69,6 +76,7 @@ describe('Astro SEO 源契约', () => {
     expect(source).toContain("from '../data/toolCatalog'");
     expect(source).toContain('popularTools');
     expect(source).toContain('toolCategories');
+    expect(source).toContain('seo-growth-and-monetization');
     expect(source).not.toContain('id="session-tools"');
     expect(source).not.toContain('Session & account tools');
   });

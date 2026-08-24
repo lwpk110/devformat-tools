@@ -7,3 +7,4 @@ dist/
 .lighthouseci/
 docs/verification/lighthouse/
 npm-debug.log*
+.local

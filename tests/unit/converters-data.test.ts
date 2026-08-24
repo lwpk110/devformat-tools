@@ -65,4 +65,11 @@ describe('converter 数据契约', () => {
     expect(faqCopy.join('\n')).not.toMatch(/\bSwap\b/i);
     expect(homeSource).not.toMatch(/\bSwap\b/i);
   });
+
+  it('description 长度保持在 108 到 165 字符之间', () => {
+    for (const converter of converters) {
+      expect(converter.description.length).toBeGreaterThanOrEqual(108);
+      expect(converter.description.length).toBeLessThanOrEqual(165);
+    }
+  });
 });
