@@ -38,6 +38,7 @@ const faqItems: FAQItem[] = [
   { q: 'What card key formats are supported?', a: 'It supports "卡密 1: email----password----token", "email----password----token", "email----token", or pure token strings. Multiple blank lines and varying separators (----, ---, |, commas) are handled automatically.' },
   { q: 'How do I import the result into Sub2API?', a: 'Choose Sub2API JSON format, click "Download JSON", then go to your Sub2API Admin Console -> Account Management -> Import, and select the generated JSON file.' },
   { q: 'Can I convert card keys for Claude, OpenAI, or Gemini as well?', a: 'Yes. Simply click the platform toggle above the input area to switch between Grok, Claude, OpenAI, and Gemini.' },
+  { q: '导入 Grok Sub2API JSON 报错或无法调用怎么办？', a: '由于 xAI 对并发验证较敏感，若导入 JSON 出现报错，建议切换到「纯 Token」格式提取 Refresh Token (RT)，并在 Sub2API 导入时使用 RT 配合「单线程验证」导入，以避免多并发触发速率风控。' },
   { q: 'What should I do if a token begins with dashes like "--"?', a: 'The parser is specially designed to handle tokens starting with negative signs or dashes without breaking the email and password delimiters.' },
 ];
 

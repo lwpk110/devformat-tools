@@ -301,6 +301,27 @@ export function CardKeyConverter({
         </div>
       )}
 
+      {/* Grok 导入特别提示 */}
+      {platform === 'grok' && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50/80 p-3.5 text-xs leading-relaxed text-amber-900 shadow-xs" role="note">
+          <div className="flex items-start gap-2">
+            <span className="text-base leading-none">💡</span>
+            <div>
+              <strong className="font-semibold text-amber-950">Grok 导入避坑提示：</strong>
+              若将生成的 Sub2API JSON 导入后无法使用或验证报错，建议点击上方切换为
+              <button
+                type="button"
+                onClick={() => handleFormatChange('tokens')}
+                className="mx-1 font-semibold text-teal-800 underline underline-offset-2 hover:text-teal-950"
+              >
+                「纯 Token」格式
+              </button>
+              提取 Refresh Token (RT)，并在 Sub2API 导入时勾选 <strong>RT 模式 + 单线程验证</strong>，以防并发验证触发 xAI 速率风控导致账号失效。
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 显著操作栏 */}
       <div className="flex flex-wrap items-center justify-end gap-3 pt-2" role="group" aria-label="结果操作">
         <button
