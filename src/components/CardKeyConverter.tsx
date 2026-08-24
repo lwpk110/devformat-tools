@@ -34,9 +34,17 @@ function triggerDownload(content: string, fileName: string, mimeType = 'applicat
   URL.revokeObjectURL(url);
 }
 
-export function CardKeyConverter() {
-  const [platform, setPlatform] = useState<CardKeyPlatform>('grok');
-  const [format, setFormat] = useState<CardKeyOutputFormat>('sub2api');
+export interface CardKeyConverterProps {
+  initialPlatform?: CardKeyPlatform;
+  initialFormat?: CardKeyOutputFormat;
+}
+
+export function CardKeyConverter({
+  initialPlatform = 'grok',
+  initialFormat = 'sub2api',
+}: CardKeyConverterProps = {}) {
+  const [platform, setPlatform] = useState<CardKeyPlatform>(initialPlatform);
+  const [format, setFormat] = useState<CardKeyOutputFormat>(initialFormat);
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [records, setRecords] = useState<CardKeyRecord[]>([]);
@@ -164,6 +172,17 @@ export function CardKeyConverter() {
 
           {/* 快捷动作 */}
           <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setPlatform('grok');
+                setFormat('tokens');
+                if (input) doConvert(input, 'grok', 'tokens');
+              }}
+              className={`${btn} ${platform === 'grok' && format === 'tokens' ? 'border-teal-700 bg-teal-50 text-teal-800 font-semibold' : ''}`}
+            >
+              ⚡ 只提取 Grok Token
+            </button>
             <input
               ref={fileInputRef}
               type="file"

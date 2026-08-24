@@ -234,6 +234,22 @@ export function buildCpaDocument(records: CardKeyRecord[]) {
 }
 
 /**
+ * 直接从原始卡密文本中仅提取 Grok Refresh Token（每行一个）
+ */
+export function extractGrokTokens(rawText: string): string {
+  const { records } = parseCardKeys(rawText, { platform: 'grok' });
+  return records.map((r) => r.token).join('\n');
+}
+
+/**
+ * 直接从原始卡密文本中仅提取 Refresh Token（每行一个）
+ */
+export function extractTokens(rawText: string, platform: CardKeyPlatform = 'grok'): string {
+  const { records } = parseCardKeys(rawText, { platform });
+  return records.map((r) => r.token).join('\n');
+}
+
+/**
  * 根据所选输出格式生成最终文本
  */
 export function generateOutput(

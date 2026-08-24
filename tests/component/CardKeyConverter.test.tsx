@@ -55,4 +55,18 @@ describe('CardKeyConverter 组件交互', () => {
 
     expect(screen.getByText('输出结果 · 纯 Token 列表')).toBeInTheDocument();
   });
+
+  it('点击只提取 Grok Token 快捷按钮将格式切换为纯 Token 列表并选定 Grok', async () => {
+    const user = userEvent.setup();
+    render(<CardKeyConverter initialPlatform="claude" initialFormat="sub2api" />);
+
+    await user.click(screen.getByRole('button', { name: '填入样例数据' }));
+    await waitFor(() => expect(screen.getByText(/已成功转换 3 个账号/)).toBeInTheDocument());
+
+    const quickGrokBtn = screen.getByRole('button', { name: '⚡ 只提取 Grok Token' });
+    await user.click(quickGrokBtn);
+
+    expect(screen.getByText('输出结果 · 纯 Token 列表')).toBeInTheDocument();
+    expect(screen.getByText('上游平台: GROK')).toBeInTheDocument();
+  });
 });
