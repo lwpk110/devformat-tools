@@ -94,8 +94,8 @@ describe('卡密 (Card Key) 转 Sub2API 转换引擎', () => {
       expect(result.records[0].platform).toBe('claude');
     });
 
-    it('对提供的 100 条样本数据 FF260825440746.txt 能够 100% 完整解析全部 100 个账号', () => {
-      const samplePath = join(process.cwd(), '.local', 'FF260825440746.txt');
+    it('对提供的 100 条样本数据 sample_cardkeys.txt 能够 100% 完整解析全部 100 个账号', () => {
+      const samplePath = join(process.cwd(), 'tests', 'fixtures', 'sample_cardkeys.txt');
       const content = readFileSync(samplePath, 'utf8');
       const result = parseCardKeys(content, { platform: 'grok' });
 
