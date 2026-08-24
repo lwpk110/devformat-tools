@@ -41,6 +41,7 @@ describe('Astro SEO 源契约', () => {
     expect(readFileSync('src/pages/robots.txt.ts', 'utf8')).toContain('DEFAULT_SITE_URL');
     expect(readFileSync('src/pages/convert/[slug].astro', 'utf8')).toContain('DEFAULT_SITE_URL');
     expect(readFileSync('src/pages/session-converter.astro', 'utf8')).toContain('DEFAULT_SITE_URL');
+    expect(readFileSync('src/pages/cardkey-converter.astro', 'utf8')).toContain('DEFAULT_SITE_URL');
   });
 
   it('sitemap.xml 和 llms.txt 路由作为 SEO 入口存在', () => {

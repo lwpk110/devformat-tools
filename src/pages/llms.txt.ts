@@ -14,6 +14,8 @@ export const GET: APIRoute = () => {
   parts.push('## Suggested starting points');
   parts.push('');
   parts.push('- https://abc123456.uk/');
+  parts.push('- https://abc123456.uk/cardkey-converter/');
+  parts.push('- https://abc123456.uk/session-converter/');
   parts.push('- https://abc123456.uk/convert/json-csv/');
   parts.push('- https://abc123456.uk/convert/base64/');
   parts.push('- https://abc123456.uk/guides/json-vs-csv/');
@@ -21,6 +23,16 @@ export const GET: APIRoute = () => {
   parts.push('- https://abc123456.uk/guides/seo-growth-and-monetization/');
   parts.push('');
   parts.push('## Available tools');
+  parts.push('');
+  parts.push('### Card Key to Sub2API Converter');
+  parts.push('');
+  parts.push('Convert raw card keys (email----password----token) into Sub2API import JSON, token lists, and CPA format locally in browser memory.');
+  parts.push('');
+  parts.push('Supported platforms: Grok (xAI), Claude (Anthropic), OpenAI / ChatGPT, Gemini (Google)');
+  parts.push('');
+  parts.push('### ChatGPT Session Converter');
+  parts.push('');
+  parts.push('Convert ChatGPT session JSON into sub2api, CPA, Cockpit, 9router, AxonHub and Codex-Manager formats with JWT parsing and synthetic token generation.');
   parts.push('');
 
   for (const converter of converters) {
